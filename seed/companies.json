@@ -600,5 +600,145 @@
     "board_token": "belvederetrading",
     "tier": 2,
     "verified_at": "2026-11-14"
+  },
+  {
+    "name": "1Password",
+    "ats": "ashby",
+    "board_token": "1password",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Render",
+    "ats": "ashby",
+    "board_token": "render",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Runway",
+    "ats": "ashby",
+    "board_token": "runway",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "ElevenLabs",
+    "ats": "ashby",
+    "board_token": "elevenlabs",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Harvey",
+    "ats": "ashby",
+    "board_token": "harvey",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Hex",
+    "ats": "ashby",
+    "board_token": "hex",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Character.AI",
+    "ats": "ashby",
+    "board_token": "character",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Cursor",
+    "ats": "ashby",
+    "board_token": "cursor",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Deepgram",
+    "ats": "ashby",
+    "board_token": "deepgram",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Lovable",
+    "ats": "ashby",
+    "board_token": "lovable",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "LangChain",
+    "ats": "ashby",
+    "board_token": "langchain",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Pinecone",
+    "ats": "ashby",
+    "board_token": "pinecone",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Temporal",
+    "ats": "ashby",
+    "board_token": "temporal",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Snyk",
+    "ats": "ashby",
+    "board_token": "snyk",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Ashby",
+    "ats": "ashby",
+    "board_token": "ashby",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Vanta",
+    "ats": "ashby",
+    "board_token": "vanta",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Watershed",
+    "ats": "ashby",
+    "board_token": "watershed",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Benchling",
+    "ats": "ashby",
+    "board_token": "benchling",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Mercor",
+    "ats": "ashby",
+    "board_token": "mercor",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Cognition",
+    "ats": "ashby",
+    "board_token": "cognition",
+    "tier": 2,
+    "verified_at": "2026-11-14"
   }
 ]
