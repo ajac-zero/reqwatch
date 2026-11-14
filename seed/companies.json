@@ -411,5 +411,131 @@
     "board_token": "mixpanel",
     "tier": 2,
     "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Stitch Fix",
+    "ats": "greenhouse",
+    "board_token": "stitchfix",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Peloton",
+    "ats": "greenhouse",
+    "board_token": "peloton",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Coursera",
+    "ats": "greenhouse",
+    "board_token": "coursera",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Carta",
+    "ats": "greenhouse",
+    "board_token": "carta",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Mercury",
+    "ats": "greenhouse",
+    "board_token": "mercury",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Gemini",
+    "ats": "greenhouse",
+    "board_token": "gemini",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "OKX",
+    "ats": "greenhouse",
+    "board_token": "okx",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "SoFi",
+    "ats": "greenhouse",
+    "board_token": "sofi",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Checkr",
+    "ats": "greenhouse",
+    "board_token": "checkr",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Cockroach Labs",
+    "ats": "greenhouse",
+    "board_token": "cockroachlabs",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Netlify",
+    "ats": "greenhouse",
+    "board_token": "netlify",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "New Relic",
+    "ats": "greenhouse",
+    "board_token": "newrelic",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Sumo Logic",
+    "ats": "greenhouse",
+    "board_token": "sumologic",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Zscaler",
+    "ats": "greenhouse",
+    "board_token": "zscaler",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Tailscale",
+    "ats": "greenhouse",
+    "board_token": "tailscale",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Vercel",
+    "ats": "greenhouse",
+    "board_token": "vercel",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Waymo",
+    "ats": "greenhouse",
+    "board_token": "waymo",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Nuro",
+    "ats": "greenhouse",
+    "board_token": "nuro",
+    "tier": 1,
+    "verified_at": "2026-11-14"
   }
 ]
