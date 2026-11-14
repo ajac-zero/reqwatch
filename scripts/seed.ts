@@ -2,7 +2,7 @@
 // then: wrangler d1 execute reqwatch --file seed.sql
 import { readFileSync } from "node:fs";
 
-interface Seed { name: string; ats: string; board_token: string; tier: number; comment?: string }
+interface Seed { name: string; ats: string; board_token: string; tier: number; verified_at: string }
 
 const q = (s: string) => `'${s.replaceAll("'", "''")}'`;
 
