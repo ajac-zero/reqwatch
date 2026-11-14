@@ -23,27 +23,29 @@ export async function scheduled(env: Env, now = new Date().toISOString()): Promi
   return enqueued;
 }
 
-/** Polls each message's company. Any throw => retry (platform moves it to the DLQ after max_retries). */
+/** Polls each message's company concurrently (per-host limiter applies), acking or retrying each individually. Any throw => retry (platform moves it to the DLQ after max_retries). */
 export async function handleQueue(
   messages: MessageLike<FetchMessage>[],
   env: Env,
   fetchImpl: typeof fetch = globalFetch,
 ): Promise<void> {
-  for (const msg of messages) {
-    try {
-      const rows = (
-        await env.DB
-          .prepare("SELECT id, name, ats, board_token FROM companies WHERE id = ?")
-          .bind(msg.body.companyId)
-          .all<{ id: number; name: string; ats: "greenhouse" | "lever" | "ashby"; board_token: string }>()
-      ).results;
-      const company = rows[0];
-      if (company) await pollCompany({ db: env.DB, fetchImpl, snapshots: env.SNAPSHOTS }, company);
-      msg.ack(); // an unknown (deleted) company has nothing to poll
-    } catch {
-      msg.retry();
-    }
-  }
+  await Promise.allSettled(
+    messages.map(async (msg) => {
+      try {
+        const rows = (
+          await env.DB
+            .prepare("SELECT id, name, ats, board_token FROM companies WHERE id = ?")
+            .bind(msg.body.companyId)
+            .all<{ id: number; name: string; ats: "greenhouse" | "lever" | "ashby"; board_token: string }>()
+        ).results;
+        const company = rows[0];
+        if (company) await pollCompany({ db: env.DB, fetchImpl, snapshots: env.SNAPSHOTS }, company);
+        msg.ack(); // an unknown (deleted) company has nothing to poll
+      } catch {
+        msg.retry();
+      }
+    }),
+  );
 }
 
 export async function health(env: Env): Promise<Response> {

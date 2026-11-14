@@ -135,6 +135,12 @@ async function runQueue(env: Env, bodies: FetchMessage[], fetchImpl: typeof fetc
   return { dlq, acked };
 }
 
+/** A bound statement that throws whether run alone or inside a batch (see makeDb's batch shim). */
+const failing = (msg: string) => {
+  const boom = () => { throw new Error(msg); };
+  return { all: async () => boom(), run: async () => boom(), runSync: boom } as never;
+};
+
 describe("worker", () => {
   const makeEnv = (db: Db): Env & { sent: FetchMessage[] } => {
     const sent: FetchMessage[] = [];
@@ -166,7 +172,8 @@ describe("worker", () => {
     const co = addCompany(raw, "lever");
     let fail = true;
     const flaky: Db = {
-      prepare: (sql) => (fail && sql.startsWith("INSERT INTO jobs") ? { bind: () => ({ all: async () => { throw new Error("d1"); }, run: async () => { throw new Error("d1"); } }) } : db.prepare(sql)),
+      batch: (stmts) => db.batch(stmts),
+      prepare: (sql) => (fail && sql.startsWith("INSERT INTO jobs") ? { bind: () => failing("d1") } : db.prepare(sql)),
     };
     const calls: string[] = [];
     const msg = (): MessageLike<FetchMessage> => ({ body: { companyId: co.id }, ack: () => void calls.push("ack"), retry: () => void calls.push("retry") });
@@ -184,16 +191,13 @@ describe("worker", () => {
     const good = addCompany(raw, "lever", "G", "g");
     const poison = addCompany(raw, "lever", "P", "p");
     const poisoned: Db = {
-      prepare: (sql) =>
-        sql.startsWith("INSERT INTO jobs") && poisonActive
-          ? { bind: (...v) => ({ all: async () => { throw new Error("x"); }, run: async () => { throw new Error("x"); } }) }
-          : db.prepare(sql),
+      batch: (stmts) => db.batch(stmts),
+      // Job inserts bind company_id first; poison only that company (messages now run concurrently).
+      prepare: (sql) => ({
+        bind: (...v) => (sql.startsWith("INSERT INTO jobs") && v[0] === poison.id ? failing("x") : db.prepare(sql).bind(...v)),
+      }),
     };
-    let poisonActive = false;
-    const f = (async (url: string) => {
-      poisonActive = String(url).includes("/p?");
-      return new Response(fixture("lever"));
-    }) as unknown as typeof fetch;
+    const f = (async () => new Response(fixture("lever"))) as unknown as typeof fetch;
     const { dlq, acked } = await runQueue(makeEnv(poisoned), [{ companyId: poison.id }, { companyId: good.id }], f);
     expect(dlq).toEqual([{ companyId: poison.id }]);
     expect(acked).toBe(1);

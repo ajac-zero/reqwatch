@@ -1,4 +1,4 @@
-import type { Db } from "./db";
+import { runBatched, type BoundStatement, type Db } from "./db";
 import { getInterest, toInterest, type Filter, type Interest } from "./interests";
 
 /** The job fields evaluate() needs. */
@@ -128,6 +128,28 @@ const toMatchJob = (r: JobRow): MatchJob => ({
 
 const all = async <T>(db: Db, sql: string, ...v: unknown[]) => (await db.prepare(sql).bind(...v).all<T>()).results;
 
+/** The match row and its guarded 'match' event. Guarded so a repeated call cannot append a second event. */
+function matchStatements(db: Db, i: Interest, job: JobRow, ev: Evaluation, now: string): BoundStatement[] {
+  return [
+    db
+      .prepare(
+        "INSERT OR IGNORE INTO matches (user_id, interest_id, job_id, score, flags_json, created_at) VALUES (?,?,?,?,?,?)",
+      )
+      .bind(i.user_id, i.id, job.id, ev.score, JSON.stringify(ev.flags), now),
+    db
+      .prepare(
+        `INSERT INTO events (user_id, type, payload_json, created_at)
+         SELECT ?, 'match', ?, ? WHERE NOT EXISTS (
+           SELECT 1 FROM events WHERE user_id = ? AND type = 'match'
+             AND json_extract(payload_json, '$.interest_id') = ? AND json_extract(payload_json, '$.job_id') = ?)`,
+      )
+      .bind(
+        i.user_id, JSON.stringify({ interest_id: i.id, job_id: job.id, score: ev.score, flags: ev.flags }), now,
+        i.user_id, i.id, job.id,
+      ),
+  ];
+}
+
 /**
  * Records a match unless the interest already has this job or a cross-post (same dedup_key) of it.
  * Appends one 'match' event per newly created match. Returns true if a new match was recorded.
@@ -140,25 +162,7 @@ async function recordMatch(db: Db, i: Interest, job: JobRow, ev: Evaluation, now
     i.id, job.id, job.dedup_key,
   );
   if (dup.n > 0) return false;
-  await db
-    .prepare(
-      "INSERT OR IGNORE INTO matches (user_id, interest_id, job_id, score, flags_json, created_at) VALUES (?,?,?,?,?,?)",
-    )
-    .bind(i.user_id, i.id, job.id, ev.score, JSON.stringify(ev.flags), now)
-    .run();
-  // Guarded so a concurrent/repeated call cannot append a second event for the same match.
-  await db
-    .prepare(
-      `INSERT INTO events (user_id, type, payload_json, created_at)
-       SELECT ?, 'match', ?, ? WHERE NOT EXISTS (
-         SELECT 1 FROM events WHERE user_id = ? AND type = 'match'
-           AND json_extract(payload_json, '$.interest_id') = ? AND json_extract(payload_json, '$.job_id') = ?)`,
-    )
-    .bind(
-      i.user_id, JSON.stringify({ interest_id: i.id, job_id: job.id, score: ev.score, flags: ev.flags }), now,
-      i.user_id, i.id, job.id,
-    )
-    .run();
+  for (const st of matchStatements(db, i, job, ev, now)) await st.run();
   return true;
 }
 
@@ -191,6 +195,73 @@ export async function matchJob(db: Db, jobId: number, now = new Date().toISOStri
     const ev = evaluate(mj, interest.filter);
     if (ev.matched && (await recordMatch(db, interest, job, ev, now))) created.push(interest.id);
   }
+  return created;
+}
+
+/** Above this many active interests, matchJobs falls back to per-job SQL prefiltering. */
+export const MATCH_INTERESTS_CAP = 5000;
+const DEDUP_KEY_CHUNK = 100;
+
+/**
+ * Batched equivalent of calling matchJob for each id (in order) after an ingest of one company: loads the
+ * active interests once, evaluates every job in memory, and writes all matches/events in batches.
+ * Returns the interest ids newly matched per job id.
+ */
+export async function matchJobs(
+  db: Db,
+  companyId: number,
+  jobIds: number[],
+  now = new Date().toISOString(),
+): Promise<Map<number, string[]>> {
+  const created = new Map<number, string[]>();
+  if (!jobIds.length) return created;
+  const rows = await all<Parameters<typeof toInterest>[0]>(
+    db, "SELECT * FROM interests WHERE paused = 0 ORDER BY id LIMIT ?", MATCH_INTERESTS_CAP + 1,
+  );
+  if (!rows.length) return created;
+  if (rows.length > MATCH_INTERESTS_CAP) {
+    for (const id of jobIds) created.set(id, await matchJob(db, id, now));
+    return created;
+  }
+  const interests = rows.map(toInterest);
+  const byId = new Map(
+    (await all<JobRow>(db, `${JOB_SELECT} WHERE j.company_id = ? AND j.status = 'open'`, companyId)).map((r) => [r.id, r]),
+  );
+
+  const hits: Array<{ i: Interest; job: JobRow; ev: Evaluation }> = [];
+  for (const id of jobIds) {
+    const job = byId.get(id);
+    if (!job) continue;
+    const mj = toMatchJob(job);
+    for (const i of interests) {
+      const ev = evaluate(mj, i.filter);
+      if (ev.matched) hits.push({ i, job, ev });
+    }
+  }
+  if (!hits.length) return created;
+
+  // (interest_id, dedup_key) pairs that already have a match, so cross-posts are not matched twice.
+  const keys = [...new Set(hits.map((h) => h.job.dedup_key))];
+  const taken = new Set<string>();
+  for (let n = 0; n < keys.length; n += DEDUP_KEY_CHUNK) {
+    const found = await all<{ interest_id: string; dedup_key: string }>(
+      db,
+      `SELECT m.interest_id, o.dedup_key FROM matches m JOIN jobs o ON o.id = m.job_id
+       WHERE o.dedup_key IN (SELECT value FROM json_each(?))`,
+      JSON.stringify(keys.slice(n, n + DEDUP_KEY_CHUNK)),
+    );
+    for (const f of found) taken.add(`${f.interest_id}\0${f.dedup_key}`);
+  }
+
+  const stmts: BoundStatement[] = [];
+  for (const { i, job, ev } of hits) {
+    const pair = `${i.id}\0${job.dedup_key}`;
+    if (taken.has(pair)) continue;
+    taken.add(pair);
+    stmts.push(...matchStatements(db, i, job, ev, now));
+    created.set(job.id, [...(created.get(job.id) ?? []), i.id]);
+  }
+  await runBatched(db, stmts);
   return created;
 }
 

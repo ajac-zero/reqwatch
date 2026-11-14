@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { ingestBoard } from "../src/ingest";
 import { FilterSchema, createInterest, deleteInterest, listInterests, updateInterest, getInterest } from "../src/interests";
-import { backfillInterest, evaluate, matchJob, type MatchJob } from "../src/match";
+import { backfillInterest, evaluate, matchJob, matchJobs, type MatchJob } from "../src/match";
 import { listMatches } from "../src/matches";
 import type { Company } from "../src/types";
 import { addCompany, makeDb, rj } from "./helpers";
@@ -205,6 +205,74 @@ describe("matchJob", () => {
     expect(pairs).toBeGreaterThan(300);
     expect(matches).toBeGreaterThan(50); // not vacuous
   }, 30000);
+});
+
+describe("matchJobs (batched)", () => {
+  it("creates exactly the matches and events per-job matchJob does, incl. cross-post dedup, on seeded random data", async () => {
+    let s = 987;
+    const rnd = () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 2 ** 32);
+    const pick = <T,>(a: readonly T[]): T => a[Math.floor(rnd() * a.length)]!;
+    const sub = <T,>(a: readonly T[], p = 0.4) => a.filter(() => rnd() < p);
+    const roles = ["software_engineering", "ml_ai", "data", "other"];
+    const sens = ["intern", "entry", "mid", "senior", "unknown"];
+    // Fixed script of interests and two rounds of jobs, replayed against two databases.
+    const interests = Array.from({ length: 40 }, (_, n) => ({
+      user: `u${n % 7}`,
+      name: `i${n}`,
+      paused: rnd() < 0.1,
+      filter: {
+        roles: sub(roles), seniority: sub(sens, 0.3), sponsorship: pick(["required", "any"]),
+        exclude_keywords: sub(["intern", "staff"], 0.2), min_score: pick([0, 0.6, 0.9]),
+        companies_exclude: rnd() < 0.2 ? ["globex"] : [],
+      },
+    }));
+    const rounds = [0, 1].map(() =>
+      Array.from({ length: 60 }, (_, n) => ({
+        title: pick(["Software Engineer", "Intern ML", "Staff SRE"]), company: pick([0, 1]),
+        role_family: rnd() < 0.1 ? null : pick(roles), seniority: rnd() < 0.1 ? null : pick(sens),
+        sponsorship: pick(["offers", "no", "unknown"]), dedup_key: `k${Math.floor(rnd() * 30)}`, n,
+      })),
+    );
+
+    const run = async (batched: boolean) => {
+      const c = makeDb();
+      const cos = [addCompany(c.raw, "greenhouse", "Acme", "a"), addCompany(c.raw, "greenhouse", "Globex", "g")];
+      for (const i of interests) await createInterest(c.db, i.user, { name: i.name, paused: i.paused, filter: i.filter });
+      let k = 0;
+      for (const jobs of rounds) {
+        const ids: number[][] = [[], []];
+        for (const j of jobs) {
+          const r = c.raw.prepare(
+            `INSERT INTO jobs (company_id, ats, ext_id, title, locations_json, url, first_seen_at, last_seen_at, last_changed_at,
+               status, content_hash, dedup_key, country_set, remote, sponsorship, role_family, seniority)
+             VALUES (?, 'greenhouse', ?, ?, '[]', 'u', ?, ?, ?, 'open', 'h', ?, ',US,', 0, ?, ?, ?)`,
+          ).run(cos[j.company]!.id, `e${k++}`, j.title, NOW, NOW, NOW, j.dedup_key, j.sponsorship, j.role_family, j.seniority);
+          ids[j.company]!.push(Number(r.lastInsertRowid));
+        }
+        for (const [ci, list] of ids.entries()) {
+          if (batched) await matchJobs(c.db, cos[ci]!.id, list, NOW);
+          else for (const id of list) await matchJob(c.db, id, NOW);
+        }
+      }
+      // Interest ids are random UUIDs (and drive candidate order), so compare by interest name, sorted.
+      const name = new Map((c.raw.prepare("SELECT id, name FROM interests").all() as any[]).map((r) => [r.id, r.name]));
+      const byJobThenInterest = (a: any, b: any) =>
+        (a.job_id ?? a.payload_json.job_id) - (b.job_id ?? b.payload_json.job_id) ||
+        String(a.interest_id ?? a.payload_json.interest_id).localeCompare(String(b.interest_id ?? b.payload_json.interest_id));
+      return {
+        matches: (c.raw.prepare("SELECT user_id, interest_id, job_id, score, flags_json FROM matches ORDER BY id").all() as any[])
+          .map((m) => ({ ...m, interest_id: name.get(m.interest_id) })).sort(byJobThenInterest),
+        events: (c.raw.prepare("SELECT user_id, type, payload_json FROM events ORDER BY seq").all() as any[]).map((e) => {
+          const p = JSON.parse(e.payload_json);
+          return { ...e, payload_json: { ...p, interest_id: name.get(p.interest_id) } };
+        }).sort(byJobThenInterest),
+      };
+    };
+    const expected = await run(false);
+    const actual = await run(true);
+    expect(expected.matches.length).toBeGreaterThan(50); // not vacuous
+    expect(actual).toEqual(expected);
+  });
 });
 
 describe("backfill", () => {

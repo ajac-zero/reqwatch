@@ -3,7 +3,8 @@ import { fetchBoard } from "../src/ats";
 import { ingestBoard } from "../src/ingest";
 import { normalizeJob } from "../src/normalize";
 import type { BoardResult, Company } from "../src/types";
-import { addCompany, fixture, jsonFetch, makeDb, rj } from "./helpers";
+import { createInterest } from "../src/interests";
+import { addCompany, fixture, jsonFetch, makeDb, recordingDb, rj } from "./helpers";
 
 const T1 = "2026-11-01T00:00:00.000Z";
 const T2 = "2026-11-02T00:00:00.000Z";
@@ -179,5 +180,36 @@ describe("enrichment on ingest", () => {
     }]);
     await ingestBoard(ctx.db, co, feed(rj("1", "Software Engineer Intern", ["Remote - US"], "Summer 2027 internship. Visa sponsorship available.")), T2);
     expect(enriched()[0].sponsorship).toBe("offers");
+  });
+});
+
+describe("ingestBoard round trips", () => {
+  const board = (n: number, desc = "d") =>
+    feed(...Array.from({ length: n }, (_, k) => rj(`j${k}`, `Software Engineer ${k % 700}`, [k % 2 ? "London, UK" : "New York, NY"], desc)));
+
+  it("ingests a 1,500-job board in a bounded number of round trips", async () => {
+    const rec = recordingDb(ctx.db);
+    const out = await ingestBoard(rec.db, co, board(1500), T1);
+    expect(out.new).toHaveLength(1500);
+    expect(rec.trips()).toBeLessThanOrEqual(60);
+    // 1,500 titles cycle over 700 values and 2 locations => cross-posted jobs exist and are reported.
+    expect(out.crossPosted.length).toBeGreaterThan(0);
+    rec.reset();
+    const again = await ingestBoard(rec.db, co, board(1500), T2);
+    expect(again).toEqual({ ...empty, crossPosted: out.crossPosted });
+    expect(rec.trips()).toBeLessThanOrEqual(60);
+  });
+
+  it("first ingest with 50 interests defined stays within 80 round trips", async () => {
+    for (let n = 0; n < 50; n++) {
+      await createInterest(ctx.db, `u${n}`, {
+        // Most interests are selective (as in production): only the first 3 match this board's jobs.
+        name: `i${n}`, filter: { roles: [n < 3 ? "software_engineering" : "data"], locations: [{ city: "london" }], min_score: 0.6 },
+      });
+    }
+    const rec = recordingDb(ctx.db);
+    await ingestBoard(rec.db, co, board(1500), T1);
+    expect(rec.trips()).toBeLessThanOrEqual(80);
+    expect((ctx.raw.prepare("SELECT COUNT(*) n FROM matches").get() as any).n).toBeGreaterThan(100);
   });
 });
