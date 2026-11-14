@@ -13,6 +13,8 @@ export interface IngestResult {
   reopened: number[];
   /** Jobs touched by this ingest that share a dedup_key with another job of the same company. */
   crossPosted: number[];
+  /** Jobs re-enriched from unknown to a known seniority; matched like new jobs. Absent when none. */
+  reclassified?: number[];
 }
 
 interface Row {
@@ -104,6 +106,7 @@ export async function ingestBoard(
       ev ? 1 : 0, ev?.[5] ?? null, ev ? 1 : 0, ev?.[6] ?? null, ev?.[7] ?? null, ev ? ENRICH_VERSION : null,
       prev.id,
     );
+    if (reenrich && e!.seniority !== "unknown") (out.reclassified ??= []).push(prev.id);
     if (reopen) out.reopened.push(prev.id);
     else if (changed) out.changed.push(prev.id);
   }
@@ -162,7 +165,7 @@ export async function ingestBoard(
   );
   for (const t of touched) if (t.id !== undefined && shared.has(t.dedupKey)) out.crossPosted.push(t.id);
 
-  // Match new and reopened jobs (not plain edits) against interests.
-  await matchJobs(db, company.id, [...out.new, ...out.reopened], now);
+  // Match new, reopened and newly classified jobs (not plain edits) against interests.
+  await matchJobs(db, company.id, [...new Set([...out.new, ...out.reopened, ...(out.reclassified ?? [])])], now);
   return out;
 }

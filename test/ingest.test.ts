@@ -196,10 +196,27 @@ describe("seniority re-enrichment", () => {
     const out = await ingestBoard(rec.db, co, feed(rj("1", "Software Engineer (L3)", ["NYC"], desc)), T2);
     expect(sen()).toEqual({ seniority: "new_grad", v: 2 });
     expect(rec.changes()).toEqual([1, 1]); // the job row once, plus the company row
-    expect(out).toEqual(empty);
+    expect(out).toEqual({ ...empty, reclassified: [1] });
     const again = recordingDb(ctx.db);
     await ingestBoard(again.db, co, feed(rj("1", "Software Engineer (L3)", ["NYC"], desc)), T3);
     expect(again.changes()).toEqual([1]); // idempotent: company row only
+  });
+  it("matches a job reclassified to a known seniority exactly once, and not again on re-ingest", async () => {
+    const plain = "Build things. ".repeat(5);
+    await ingestBoard(ctx.db, co, feed(rj("1", "Software Engineer (L3)", ["NYC"], plain)), T1);
+    await createInterest(ctx.db, "u1", { name: "ng", filter: { seniority: ["new_grad"], min_score: 0 } });
+    const events = () => (ctx.raw.prepare("SELECT COUNT(*) n FROM events WHERE type = 'match'").get() as any).n;
+    // Plain edit of an unknown job that stays unknown: no match.
+    await ingestBoard(ctx.db, co, feed(rj("1", "Software Engineer (L3)", ["NYC"], plain + "More.")), T2);
+    expect(events()).toBe(0);
+    ctx.raw.prepare("UPDATE jobs SET enrich_version = 1").run();
+    const out = await ingestBoard(ctx.db, co, feed(rj("1", "Software Engineer (L3)", ["NYC"], "We hire new grads. " + plain)), T3);
+    expect(out).toMatchObject({ new: [], reopened: [], reclassified: [1] });
+    expect(events()).toBe(1);
+    expect((ctx.raw.prepare("SELECT COUNT(*) n FROM matches").get() as any).n).toBe(1);
+    const again = await ingestBoard(ctx.db, co, feed(rj("1", "Software Engineer (L3)", ["NYC"], "We hire new grads. " + plain)), T4);
+    expect(again.reclassified).toBeUndefined();
+    expect(events()).toBe(1);
   });
   it("bumps the version even when still unknown, and leaves known seniority and unknown future versions alone", async () => {
     await ingestBoard(ctx.db, co, feed(rj("1", "Software Engineer", ["NYC"], "Build things."), rj("2", "Software Engineer II", ["NYC"], "x")), T1);
