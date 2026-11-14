@@ -1,5 +1,6 @@
 import type { Db } from "./db";
 import { enrichJob } from "./enrich";
+import { matchJob } from "./match";
 import { normalizeJob } from "./normalize";
 import type { BoardResult, Company } from "./types";
 
@@ -130,5 +131,8 @@ export async function ingestBoard(
     );
     if ((dup[0]?.n ?? 0) > 0) out.crossPosted.push(id);
   }
+
+  // Match new and reopened jobs (not plain edits) against interests.
+  for (const id of [...out.new, ...out.reopened]) await matchJob(db, id, now);
   return out;
 }
