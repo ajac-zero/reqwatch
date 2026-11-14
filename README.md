@@ -16,6 +16,7 @@ Stateless Streamable HTTP endpoint at `POST /mcp` (JSON responses; `GET` returns
 (API tokens, stored as SHA-256 hashes); unauthenticated calls get `401` with a `WWW-Authenticate` header pointing at
 `/.well-known/oauth-protected-resource` (issuers from `AUTH_ISSUER`). 60 calls/min per user, then `429` + `Retry-After`.
 Create the first token with `POST /admin/tokens` (`Authorization: Bearer $ADMIN_SECRET`, body `{"user_id"?, "name"}`); the route is 404 unless the `ADMIN_SECRET` secret is set.
+For hosted use, an OAuth 2.1 server (GitHub login, PKCE, DCR) is also available: OAuth access tokens are accepted alongside API tokens. See [docs/self-host.md](docs/self-host.md).
 
 Tools: `create_interest`, `update_interest`, `delete_interest`, `list_interests`, `list_matches` (call at session start and
 periodically with the last `next_cursor`), `get_job`, `search_jobs` (open jobs), `list_companies`, `get_stats`.

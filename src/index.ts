@@ -3,6 +3,7 @@ import { pollCompany, type R2Like } from "./poll";
 import { handleAdminTokens } from "./auth";
 import { handleMcpRoute } from "./mcp/http";
 import { handleWaitlist } from "./waitlist";
+import { OAUTH_PATHS, handleOAuthRoute } from "./oauth";
 import { leaseCompany, selectDueCompanies } from "./scheduler";
 
 export interface QueueLike<T> {
@@ -18,6 +19,9 @@ export interface Env {
   ADMIN_SECRET?: string;
   /** OAuth issuer advertised in /.well-known/oauth-protected-resource. */
   AUTH_ISSUER?: string;
+  /** GitHub OAuth app credentials; hosted OAuth login is enabled only when both are set. */
+  GITHUB_CLIENT_ID?: string;
+  GITHUB_CLIENT_SECRET?: string;
 }
 
 export interface FetchMessage {
@@ -88,6 +92,7 @@ export default {
     const path = new URL(req.url).pathname;
     if (path === "/health") return health(env);
     if (path === "/mcp" || path === "/.well-known/oauth-protected-resource") return handleMcpRoute(req, env);
+    if (OAUTH_PATHS.includes(path)) return handleOAuthRoute(req, env);
     if (path === "/admin/tokens") return handleAdminTokens(req, env);
     if (path === "/api/waitlist") return handleWaitlist(req, env);
     return new Response("reqwatch", { status: 200 });
