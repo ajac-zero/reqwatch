@@ -36,7 +36,8 @@ interface JobRow {
 }
 const JOB_COLS = `j.id, j.title, c.name AS company, j.url, j.locations_json, j.country_set, j.remote, j.sponsorship,
   j.role_family, j.seniority, j.grad_window_start, j.grad_window_end, j.employment_type, j.status,
-  j.first_seen_at, j.posted_at, j.last_seen_at`;
+  j.first_seen_at, j.posted_at,
+  CASE WHEN j.status = 'open' THEN COALESCE(c.last_ok_at, j.last_seen_at) ELSE j.last_seen_at END AS last_seen_at`;
 
 const jobOut = (r: JobRow) => ({
   id: r.id, title: r.title, company: r.company, url: r.url, status: r.status,

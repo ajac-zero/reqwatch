@@ -84,12 +84,13 @@ describe("ingestBoard", () => {
     expect(rows()).toEqual(before);
   });
 
-  it("later re-ingest only moves last_seen_at", async () => {
+  it("later re-ingest of an unchanged job writes no job row; the company row records freshness", async () => {
     const f = feed(rj("a"));
     await ingestBoard(ctx.db, co, f, T1);
+    const before = rows();
     expect(await ingestBoard(ctx.db, co, f, T2)).toEqual(empty);
-    const [r] = rows();
-    expect([r.first_seen_at, r.last_seen_at, r.last_changed_at]).toEqual([T1, T2, T1]);
+    expect(rows()).toEqual(before);
+    expect((ctx.raw.prepare("SELECT last_ok_at FROM companies").get() as any).last_ok_at).toBe(T2);
   });
 
   it("edit changes hash and last_changed_at, not first_seen_at", async () => {
@@ -198,6 +199,26 @@ describe("ingestBoard round trips", () => {
     const again = await ingestBoard(rec.db, co, board(1500), T2);
     expect(again).toEqual({ ...empty, crossPosted: out.crossPosted });
     expect(rec.trips()).toBeLessThanOrEqual(60);
+  });
+
+  it("an unchanged re-ingest of 1,500 jobs writes only the company row", async () => {
+    await ingestBoard(ctx.db, co, board(1500), T1);
+    const jobsBefore = rows();
+    const rec = recordingDb(ctx.db);
+    await ingestBoard(rec.db, co, board(1500), T2);
+    expect(rec.changes()).toEqual([1]); // statements that affected rows: companies update only
+    expect(rec.changes().reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(5);
+    expect(rows()).toEqual(jobsBefore);
+    expect((ctx.raw.prepare("SELECT last_ok_at FROM companies").get() as any).last_ok_at).toBe(T2);
+  });
+
+  it("rewrites only rows that changed (edit, miss reset) and fixes only cross_posted flags that flip", async () => {
+    await ingestBoard(ctx.db, co, feed(rj("a"), rj("b"), rj("c", "Other")), T1); // a,b share a dedup_key
+    await ingestBoard(ctx.db, co, feed(rj("a"), rj("c", "Other")), T2); // b missed once
+    const rec = recordingDb(ctx.db);
+    await ingestBoard(rec.db, co, feed(rj("a"), rj("b"), rj("c", "Other", ["NYC"], "edited")), T3);
+    // b: miss reset, c: edit, company row; cross_posted unchanged => no row writes for it.
+    expect(rec.changes()).toEqual([1, 1, 1]);
   });
 
   it("first ingest with 50 interests defined stays within 80 round trips", async () => {

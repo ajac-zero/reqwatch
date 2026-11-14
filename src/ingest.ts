@@ -22,6 +22,11 @@ interface Row {
   content_hash: string;
   missed_polls: number;
   role_family: string | null;
+  title: string;
+  locations_json: string;
+  url: string;
+  posted_at: string | null;
+  dedup_key: string;
 }
 
 export async function ingestBoard(
@@ -37,7 +42,7 @@ export async function ingestBoard(
 
   const existing = new Map(
     (await all<Row>(
-      "SELECT id, ext_id, status, content_hash, missed_polls, role_family FROM jobs WHERE company_id = ? AND ats = ?",
+      "SELECT id, ext_id, status, content_hash, missed_polls, role_family, title, locations_json, url, posted_at, dedup_key FROM jobs WHERE company_id = ? AND ats = ?",
       company.id, company.ats,
     )).map((r) => [r.ext_id, r]),
   );
@@ -71,6 +76,13 @@ export async function ingestBoard(
     }
     const reopen = prev.status === "closed";
     const changed = prev.content_hash !== j.contentHash;
+    touched.push({ id: prev.id, extId: j.extId, dedupKey: j.dedupKey });
+    // D1 bills rows written: an unchanged, live job is not rewritten. Liveness is "present in the latest
+    // complete feed", tracked by companies.last_ok_at; jobs.last_seen_at only moves on a write.
+    if (
+      !reopen && !changed && prev.missed_polls === 0 && prev.role_family !== null && prev.title === j.title &&
+      prev.locations_json === locs && prev.url === j.url && prev.posted_at === j.postedAt && prev.dedup_key === j.dedupKey
+    ) continue;
     queue(
       `UPDATE jobs SET last_seen_at = ?, missed_polls = 0, status = 'open',
          reposted = CASE WHEN ? THEN 1 ELSE reposted END,
@@ -90,7 +102,6 @@ export async function ingestBoard(
     );
     if (reopen) out.reopened.push(prev.id);
     else if (changed) out.changed.push(prev.id);
-    touched.push({ id: prev.id, extId: j.extId, dedupKey: j.dedupKey });
   }
 
   if (result.complete) {
@@ -115,12 +126,13 @@ export async function ingestBoard(
     );
   }
 
-  // Persist the flag for every job of this company: open jobs sharing a dedup_key with another open job.
+  // Persist the flag for jobs of this company: open jobs sharing a dedup_key with another open job.
+  // Only rows whose value actually changes are written.
   queue(
-    `UPDATE jobs SET cross_posted = CASE WHEN status = 'open' AND EXISTS (
-       SELECT 1 FROM jobs o WHERE o.company_id = jobs.company_id AND o.id != jobs.id
-         AND o.status = 'open' AND o.dedup_key = jobs.dedup_key) THEN 1 ELSE 0 END
-     WHERE company_id = ?`,
+    `UPDATE jobs SET cross_posted = 1 - cross_posted WHERE company_id = ? AND cross_posted != (
+       CASE WHEN status = 'open' AND EXISTS (
+         SELECT 1 FROM jobs o WHERE o.company_id = jobs.company_id AND o.id != jobs.id
+           AND o.status = 'open' AND o.dedup_key = jobs.dedup_key) THEN 1 ELSE 0 END)`,
     company.id,
   );
 

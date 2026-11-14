@@ -36,20 +36,26 @@ export const rj = (extId: string, title = "Engineer", locations = ["NYC"], descr
 });
 
 /** Wraps a Db and counts round trips: each prepared-statement run/all is one, each batch call is one. */
-export function recordingDb(inner: Db): { db: Db; trips: () => number; statements: () => number; reset: () => void } {
+export function recordingDb(inner: Db): { db: Db; trips: () => number; statements: () => number; changes: () => number[]; reset: () => void } {
   let trips = 0, statements = 0;
+  let changes: number[] = []; // rows changed by each write statement that changed any
+  const note = (r: unknown) => {
+    const n = (r as { changes?: number } | undefined)?.changes ?? 0;
+    if (n > 0) changes.push(n);
+    return r;
+  };
   const db: Db = {
     prepare: (sql) => ({
       bind: (...v) => {
         const s = inner.prepare(sql).bind(...v);
         return {
           all: <T>() => (trips++, statements++, s.all<T>()),
-          run: () => (trips++, statements++, s.run()),
+          run: async () => (trips++, statements++, note(await s.run())),
           runSync: (s as unknown as { runSync(): unknown }).runSync,
         } as never;
       },
     }),
-    batch: (stmts) => (trips++, (statements += stmts.length), inner.batch(stmts)),
+    batch: async (stmts) => (trips++, (statements += stmts.length), (await inner.batch(stmts)).forEach(note), []),
   };
-  return { db, trips: () => trips, statements: () => statements, reset: () => ((trips = 0), (statements = 0)) };
+  return { db, trips: () => trips, statements: () => statements, changes: () => changes, reset: () => ((trips = 0), (statements = 0), (changes = [])) };
 }
