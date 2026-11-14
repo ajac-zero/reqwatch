@@ -367,3 +367,104 @@ describe("ingest wiring", () => {
     expect(count()).toBe(2);
   });
 });
+
+describe("backfill SQL candidate selection", () => {
+  const day = (d: number) => new Date(Date.parse(NOW) - d * 86_400_000).toISOString();
+  const bulkInsert = (n: number, f: (k: number) => Partial<Record<string, unknown>>) => {
+    ctx.raw.exec("BEGIN");
+    for (let k = 0; k < n; k++) insertJob({ ext_id: `b${k}`, dedup_key: `bk${k}`, title: `Job ${k}`, ...f(k) });
+    ctx.raw.exec("COMMIT");
+  };
+  const matchedIds = (iid: string) =>
+    (ctx.raw.prepare("SELECT job_id FROM matches WHERE interest_id = ? ORDER BY job_id").all(iid) as any[]).map((r) => r.job_id);
+
+  it("matches exactly what brute-force evaluate finds (seeded random)", async () => {
+    let seed = 12345;
+    const rnd = (n: number) => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0), seed % n);
+    const pick = <T,>(a: readonly T[]) => a[rnd(a.length)]!;
+    const cos = ["Acme", "Beta Corp", "Gamma"].map((n, k) => addCompany(ctx.raw, "greenhouse", n, `t${k}`));
+    const roles = ["software_engineering", "data", "design", null] as const;
+    const sens = ["intern", "new_grad", "entry", "senior", null] as const;
+    const spons = ["offers", "no", "unknown"] as const;
+    const ctry = [",US,", ",GB,", ",US,GB,", ",", ",CA,"] as const;
+    const titles = ["Software Engineer", "Data Intern", "Staff Designer"];
+    const jobs: number[] = [];
+    for (let k = 0; k < 150; k++) {
+      jobs.push(insertJob({
+        ext_id: `r${k}`, title: pick(titles), dedup_key: `d${rnd(100)}`, role_family: pick(roles), seniority: pick(sens),
+        sponsorship: pick(spons), country_set: pick(ctry), remote: rnd(2), first_seen_at: day(rnd(60)),
+        status: rnd(8) ? "open" : "closed", locations_json: '["Remote, US"]',
+      }, pick(cos).id));
+    }
+    const subset = <T,>(a: readonly T[]) => a.filter(() => rnd(3) === 0);
+    let total = 0;
+    for (let n = 0; n < 300; n++) {
+      const filter = F({
+        roles: subset(["software_engineering", "data", "design"]),
+        seniority: subset(["intern", "new_grad", "entry", "senior", "unknown"]),
+        sponsorship: pick(["required", "any", "not_needed"]),
+        companies_include: rnd(4) === 0 ? subset(["acme", "beta corp"]) : [],
+        companies_exclude: rnd(4) === 0 ? subset(["gamma"]) : [],
+        exclude_keywords: rnd(5) === 0 ? ["intern"] : [],
+        locations: rnd(2) ? subset(["US", "GB", "CA"]).map((country) => ({ country, ...(rnd(3) === 0 ? { remote: true } : {}) })) : rnd(3) === 0 ? [{ remote: true }] : [],
+        min_score: pick([0, 0.6, 0.9]),
+      });
+      const i = await createInterest(ctx.db, `U${n}`, { name: "p", filter });
+      const days = pick([7, 30]);
+      const since = day(days);
+      const rows = ctx.raw.prepare(
+        `SELECT j.id, j.title, c.name AS company, j.dedup_key, j.locations_json, j.country_set, j.remote, j.sponsorship,
+           j.role_family, j.seniority, j.grad_window_start, j.grad_window_end
+         FROM jobs j JOIN companies c ON c.id = j.company_id WHERE j.status='open' AND j.first_seen_at >= ?
+         ORDER BY j.first_seen_at DESC, j.id DESC`,
+      ).all(since) as any[];
+      const seen = new Set<string>();
+      const expected: number[] = [];
+      for (const r of rows) {
+        const mj: MatchJob = { ...r, locations: JSON.parse(r.locations_json), countries: r.country_set.split(",").filter(Boolean), remote: r.remote === 1 };
+        if (evaluate(mj, filter).matched && !seen.has(r.dedup_key)) { seen.add(r.dedup_key); expected.push(r.id); }
+      }
+      const res = await backfillInterest(ctx.db, `U${n}`, i.id, { now: NOW, days });
+      total += expected.length;
+      expect(res.matched).toBe(expected.length);
+      expect(matchedIds(i.id)).toEqual(expected.sort((a, b) => a - b));
+    }
+    expect(total).toBeGreaterThan(1000); // not vacuous
+  }, 60_000);
+
+  it("finds all 120 matching jobs even when they are not among the newest 1000", async () => {
+    // 120 old-ish intern jobs, then 4880 newer non-matching jobs.
+    bulkInsert(5000, (k) =>
+      k < 120 ? { seniority: "intern", first_seen_at: day(10) } : { seniority: "senior", first_seen_at: day(1) },
+    );
+    const i = await createInterest(ctx.db, "A", {
+      name: "interns", filter: { roles: ["software_engineering"], seniority: ["intern"], locations: [{ country: "US" }] },
+    });
+    expect(await backfillInterest(ctx.db, "A", i.id, { now: NOW })).toEqual({ scanned: 120, matched: 120 });
+    expect(matchedIds(i.id)).toHaveLength(120);
+  }, 60_000);
+
+  it("honors the limit over candidates, newest first", async () => {
+    bulkInsert(1200, (k) => ({ first_seen_at: new Date(Date.parse(NOW) - k * 1000).toISOString() }));
+    const i = await createInterest(ctx.db, "A", { name: "all", filter: { roles: ["software_engineering"] } });
+    const res = await backfillInterest(ctx.db, "A", i.id, { now: NOW, limit: 5000 });
+    expect(res).toEqual({ scanned: 1000, matched: 1000 });
+    const oldest = ctx.raw.prepare(
+      "SELECT MIN(j.id) id FROM matches m JOIN jobs j ON j.id = m.job_id",
+    ).get() as { id: number };
+    expect(oldest.id).toBe(1); // k=0 is newest (id 1); the 200 oldest are excluded
+    expect(matchedIds(i.id).at(-1)).toBe(1000);
+  }, 60_000);
+
+  it("is tenant isolated and does nothing for paused interests", async () => {
+    insertJob();
+    const a = await createInterest(ctx.db, "A", { name: "a" });
+    const b = await createInterest(ctx.db, "B", { name: "b" });
+    expect(await backfillInterest(ctx.db, "B", a.id, { now: NOW })).toEqual({ scanned: 0, matched: 0 });
+    expect(await backfillInterest(ctx.db, "A", a.id, { now: NOW })).toEqual({ scanned: 1, matched: 1 });
+    expect(matchedIds(b.id)).toEqual([]);
+    await updateInterest(ctx.db, "B", b.id, { paused: true });
+    expect(await backfillInterest(ctx.db, "B", b.id, { now: NOW })).toEqual({ scanned: 0, matched: 0 });
+    expect(matchedIds(b.id)).toEqual([]);
+  });
+});

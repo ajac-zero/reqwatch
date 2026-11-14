@@ -272,14 +272,59 @@ export async function backfillInterest(
   const days = Math.max(0, opts.days ?? 30);
   const limit = Math.min(Math.max(1, opts.limit ?? BACKFILL_MAX_LIMIT), BACKFILL_MAX_LIMIT);
   const since = new Date(Date.parse(now) - days * 86_400_000).toISOString();
-  const jobs = await all<JobRow>(
-    db, `${JOB_SELECT} WHERE j.status = 'open' AND j.first_seen_at >= ? ORDER BY j.first_seen_at DESC, j.id DESC LIMIT ?`,
-    since, limit,
-  );
-  let matched = 0;
-  for (const job of jobs) {
-    const ev = evaluate(toMatchJob(job), interest.filter);
-    if (ev.matched && (await recordMatch(db, interest, job, ev, now))) matched++;
+  // The hard constraints select candidates in SQL so the limit applies to candidates, not to all jobs.
+  // Every clause is a superset of what evaluate() accepts; evaluate() stays the source of truth.
+  const f = interest.filter;
+  const where = ["j.status = 'open'", "j.first_seen_at >= ?"];
+  const params: unknown[] = [since];
+  const inList = (expr: string, values: string[]) => {
+    where.push(`${expr} IN (SELECT value FROM json_each(?))`);
+    params.push(JSON.stringify(values));
+  };
+  if (f.roles.length) inList("j.role_family", f.roles);
+  if (f.seniority.length) inList("COALESCE(NULLIF(j.seniority, ''), 'unknown')", f.seniority);
+  if (f.companies_include.length) inList("lower(trim(c.name))", f.companies_include);
+  if (f.companies_exclude.length) {
+    where.push("lower(trim(c.name)) NOT IN (SELECT value FROM json_each(?))");
+    params.push(JSON.stringify(f.companies_exclude));
   }
+  if (f.sponsorship === "required") where.push("j.sponsorship != 'no'");
+  if (f.locations.length && f.locations.every((l) => l.country !== undefined)) {
+    const countries = [...new Set(f.locations.map((l) => `,${l.country},`))];
+    where.push("EXISTS (SELECT 1 FROM json_each(?) WHERE instr(',' || j.country_set || ',', value) > 0)");
+    params.push(JSON.stringify(countries));
+  }
+  const jobs = await all<JobRow>(
+    db, `${JOB_SELECT} WHERE ${where.join(" AND ")} ORDER BY j.first_seen_at DESC, j.id DESC LIMIT ?`,
+    ...params, limit,
+  );
+
+  const hits = jobs.flatMap((job) => {
+    const ev = evaluate(toMatchJob(job), f);
+    return ev.matched ? [{ job, ev }] : [];
+  });
+  if (!hits.length) return { scanned: jobs.length, matched: 0 };
+
+  // dedup_keys this interest already matched (incl. the same job), so cross-posts are not matched twice.
+  const taken = new Set<string>();
+  const keys = [...new Set(hits.map((h) => h.job.dedup_key))];
+  for (let n = 0; n < keys.length; n += DEDUP_KEY_CHUNK) {
+    const found = await all<{ dedup_key: string }>(
+      db,
+      `SELECT DISTINCT o.dedup_key FROM matches m JOIN jobs o ON o.id = m.job_id
+       WHERE m.interest_id = ? AND o.dedup_key IN (SELECT value FROM json_each(?))`,
+      interest.id, JSON.stringify(keys.slice(n, n + DEDUP_KEY_CHUNK)),
+    );
+    for (const r of found) taken.add(r.dedup_key);
+  }
+  const stmts: BoundStatement[] = [];
+  let matched = 0;
+  for (const { job, ev } of hits) {
+    if (taken.has(job.dedup_key)) continue;
+    taken.add(job.dedup_key);
+    stmts.push(...matchStatements(db, interest, job, ev, now));
+    matched++;
+  }
+  await runBatched(db, stmts);
   return { scanned: jobs.length, matched };
 }
