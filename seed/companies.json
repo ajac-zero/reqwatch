@@ -838,5 +838,68 @@
     "board_token": "baseten",
     "tier": 2,
     "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Anthropic",
+    "ats": "greenhouse",
+    "board_token": "anthropic",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "xAI",
+    "ats": "greenhouse",
+    "board_token": "xai",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Lattice",
+    "ats": "greenhouse",
+    "board_token": "lattice",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Intercom",
+    "ats": "greenhouse",
+    "board_token": "intercom",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Grafana Labs",
+    "ats": "greenhouse",
+    "board_token": "grafanalabs",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Epic Games",
+    "ats": "greenhouse",
+    "board_token": "epicgames",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Riot Games",
+    "ats": "greenhouse",
+    "board_token": "riotgames",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Twitch",
+    "ats": "greenhouse",
+    "board_token": "twitch",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Medium",
+    "ats": "greenhouse",
+    "board_token": "medium",
+    "tier": 2,
+    "verified_at": "2026-11-14"
   }
 ]
