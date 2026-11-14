@@ -299,5 +299,117 @@
     "board_token": "clickhouse",
     "tier": 2,
     "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Lyft",
+    "ats": "greenhouse",
+    "board_token": "lyft",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Scale AI",
+    "ats": "greenhouse",
+    "board_token": "scaleai",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Brex",
+    "ats": "greenhouse",
+    "board_token": "brex",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Samsara",
+    "ats": "greenhouse",
+    "board_token": "samsara",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Anduril",
+    "ats": "greenhouse",
+    "board_token": "andurilindustries",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Roblox",
+    "ats": "greenhouse",
+    "board_token": "roblox",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Affirm",
+    "ats": "greenhouse",
+    "board_token": "affirm",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Gusto",
+    "ats": "greenhouse",
+    "board_token": "gusto",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Squarespace",
+    "ats": "greenhouse",
+    "board_token": "squarespace",
+    "tier": 1,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Airtable",
+    "ats": "greenhouse",
+    "board_token": "airtable",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Flexport",
+    "ats": "greenhouse",
+    "board_token": "flexport",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Chime",
+    "ats": "greenhouse",
+    "board_token": "chime",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Fastly",
+    "ats": "greenhouse",
+    "board_token": "fastly",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "PagerDuty",
+    "ats": "greenhouse",
+    "board_token": "pagerduty",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "LaunchDarkly",
+    "ats": "greenhouse",
+    "board_token": "launchdarkly",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Mixpanel",
+    "ats": "greenhouse",
+    "board_token": "mixpanel",
+    "tier": 2,
+    "verified_at": "2026-11-14"
   }
 ]
