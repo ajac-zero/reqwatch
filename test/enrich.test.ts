@@ -70,6 +70,24 @@ describe("unknown is never coerced", () => {
     expect(e("Software Engineer", [], "Founded in 2015, we ship in 2027.").grad_window_start).toBeNull());
 });
 
+describe("seniority from description", () => {
+  const sen = (title: string, d: string) => enrichJob({ title, locations: [], description: d }).seniority;
+  const filler = "We build backend services and ship weekly. ".repeat(20);
+  it("uses strict phrases in the intro or after an About-the-role heading", () => {
+    expect(sen("Software Engineer (L3)", "We hire new grads. " + filler)).toBe("new_grad");
+    expect(sen("Software Engineer", filler + "<h2>About the role</h2> Entry-level position.")).toBe("entry");
+  });
+  it("ignores the same phrases in later boilerplate, with senior titles, or with senior experience asks", () => {
+    expect(sen("Software Engineer", filler + "We run an internship program.")).toBe("unknown");
+    expect(sen("Staff Engineer", "We hire new grads every year. " + filler)).toBe("staff_plus");
+    expect(sen("Software Engineer (L4)", "We hire new grads. " + filler)).toBe("unknown");
+    expect(sen("Software Engineer", "Entry level friendly, 5+ years of experience. " + filler)).toBe("unknown");
+    expect(sen("Software Engineer", "You will mentor interns. " + filler)).toBe("unknown");
+  });
+  it("conflicting levels stay unknown", () =>
+    expect(sen("Software Engineer", "New grad or internship roles. " + filler)).toBe("unknown"));
+});
+
 describe("location parsing", () => {
   it.each([
     ["New York, NY", { city: "New York", region: "NY", country: "US", remote: false }],

@@ -20,6 +20,9 @@ For hosted use, an OAuth 2.1 server (GitHub login, PKCE, DCR) is also available:
 
 Tools: `create_interest`, `update_interest`, `delete_interest`, `list_interests`, `list_matches` (call at session start and
 periodically with the last `next_cursor`), `get_job`, `search_jobs` (open jobs), `list_companies`, `get_stats`, `set_delivery`, `delete_my_data`.
+`update_interest` and `delete_interest` take `id` or `interest_id` (same value; both given and different is a validation error).
+
+**Seniority is a hard filter.** If an interest's `seniority` list is non-empty, jobs whose level could not be determined (`unknown`) never match, unless the list includes `"unknown"` to opt in. Level comes from the title; when the title gives none, strict phrases in the opening of the description ("new grad", "class of 2027", "entry-level", "internship"...) are used.
 
 ## Delivery: honest status
 - **Primary: cursor tool.** `list_matches(since_cursor)` is idempotent and works with every MCP client today.

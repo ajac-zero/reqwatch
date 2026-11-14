@@ -51,11 +51,22 @@ const jobOut = (r: JobRow) => ({
   first_seen_at: r.first_seen_at, posted_at: r.posted_at, last_seen_at: r.last_seen_at,
 });
 
+const ID_HINT = " Identify the interest with `id` or `interest_id` (same value; if both are given they must match).";
+const interestRef = { id: z.string().optional(), interest_id: z.string().optional() };
+const refineRef = (v: { id?: string; interest_id?: string }, ctx: z.RefinementCtx) => {
+  if (v.id === undefined && v.interest_id === undefined) ctx.addIssue({ code: "custom", message: "id (or interest_id) is required" });
+  else if (v.id !== undefined && v.interest_id !== undefined && v.id !== v.interest_id) {
+    ctx.addIssue({ code: "custom", message: "id and interest_id differ; pass one, or the same value for both" });
+  }
+};
+const refId = (a: { id?: string; interest_id?: string }) => (a.id ?? a.interest_id)!;
+
 export const TOOLS: Tool[] = [
   {
     name: "create_interest", scope: "write",
     description:
       "Save a job interest (a named filter: roles, seniority, locations, sponsorship, grad window, company include/exclude, min_score). " +
+      "Seniority is a hard filter: jobs whose level could not be determined are excluded unless the seniority list includes 'unknown'. " +
       "New matching jobs are then recorded for list_matches; recent open jobs are backfilled immediately.",
     input: z.object({ name: z.string(), filter: FilterSchema.optional() }),
     async run({ db, user_id }, a: { name: string; filter?: unknown }) {
@@ -66,23 +77,23 @@ export const TOOLS: Tool[] = [
   },
   {
     name: "update_interest", scope: "write",
-    description: "Update an interest you own. patch may contain name, filter (replaces the whole filter) and paused.",
+    description: "Update an interest you own. patch may contain name, filter (replaces the whole filter) and paused." + ID_HINT,
     input: z.object({
-      id: z.string(),
+      ...interestRef,
       patch: z.object({ name: z.string().optional(), filter: FilterSchema.optional(), paused: z.boolean().optional() }),
-    }),
-    async run({ db, user_id }, a: { id: string; patch: { name?: string; filter?: unknown; paused?: boolean } }) {
-      const interest = await updateInterest(db, user_id, a.id, a.patch);
+    }).superRefine(refineRef),
+    async run({ db, user_id }, a: { id?: string; interest_id?: string; patch: { name?: string; filter?: unknown; paused?: boolean } }) {
+      const interest = await updateInterest(db, user_id, refId(a), a.patch);
       if (!interest) throw new ToolError("not_found: no such interest");
       return { interest };
     },
   },
   {
     name: "delete_interest", scope: "write",
-    description: "Delete an interest you own, together with its matches.",
-    input: z.object({ id: z.string() }),
-    async run({ db, user_id }, a: { id: string }) {
-      if (!(await deleteInterest(db, user_id, a.id))) throw new ToolError("not_found: no such interest");
+    description: "Delete an interest you own, together with its matches." + ID_HINT,
+    input: z.object(interestRef).superRefine(refineRef),
+    async run({ db, user_id }, a: { id?: string; interest_id?: string }) {
+      if (!(await deleteInterest(db, user_id, refId(a)))) throw new ToolError("not_found: no such interest");
       return { deleted: true };
     },
   },

@@ -28,7 +28,8 @@ const FAIL: Evaluation = { matched: false, score: 0, flags: [] };
 /**
  * Pure matching. Hard filters reject; everything else contributes to a weighted score.
  * Role is a hard filter when roles are given (a wrong role must not be rescued by other weights).
- * Unknown job data passes but scores 0.5 for that component and adds a *_unverified flag.
+ * Seniority is a hard filter too: a job with unknown/null seniority fails unless the filter lists 'unknown'.
+ * Other unknown job data passes but scores 0.5 for that component and adds a *_unverified flag.
  */
 export function evaluate(job: MatchJob, f: Filter): Evaluation {
   const flags: string[] = [];
@@ -42,16 +43,8 @@ export function evaluate(job: MatchJob, f: Filter): Evaluation {
   let role = 1;
   if (f.roles.length && !(job.role_family && (f.roles as string[]).includes(job.role_family))) return FAIL;
 
-  let seniority = 1;
-  if (f.seniority.length) {
-    const s = job.seniority;
-    if (!s || s === "unknown") {
-      if (!(f.seniority as string[]).includes("unknown")) {
-        seniority = 0.5;
-        flags.push("seniority_unverified");
-      }
-    } else if (!(f.seniority as string[]).includes(s)) return FAIL;
-  }
+  const seniority = 1;
+  if (f.seniority.length && !(f.seniority as string[]).includes(job.seniority || "unknown")) return FAIL;
 
   if (f.locations.length) {
     const text = job.locations.join(" | ").toLowerCase();
@@ -175,7 +168,6 @@ export const CANDIDATE_SQL = `SELECT * FROM interests WHERE paused = 0
   AND NOT EXISTS (SELECT 1 FROM json_each(filter_json, '$.companies_exclude') WHERE value = ?)
   AND NOT (json_extract(filter_json, '$.sponsorship') = 'required' AND ? = 'no')
   AND (json_array_length(COALESCE(json_extract(filter_json, '$.seniority'), '[]')) = 0
-       OR ? IN ('', 'unknown')
        OR EXISTS (SELECT 1 FROM json_each(filter_json, '$.seniority') WHERE value = ?))
   ORDER BY id`;
 
@@ -184,10 +176,10 @@ export async function matchJob(db: Db, jobId: number, now = new Date().toISOStri
   const [job] = await all<JobRow>(db, `${JOB_SELECT} WHERE j.id = ?`, jobId);
   if (!job || job.status !== "open") return [];
   const mj = toMatchJob(job);
-  const sen = job.seniority ?? "";
+  const sen = job.seniority || "unknown";
   const candidates = await all<Parameters<typeof toInterest>[0]>(
     db, CANDIDATE_SQL,
-    job.role_family ?? "", job.company.trim().toLowerCase(), job.company.trim().toLowerCase(), job.sponsorship, sen, sen,
+    job.role_family ?? "", job.company.trim().toLowerCase(), job.company.trim().toLowerCase(), job.sponsorship, sen,
   );
   const created: string[] = [];
   for (const row of candidates) {

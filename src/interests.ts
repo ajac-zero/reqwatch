@@ -19,6 +19,7 @@ export const LocationSchema = z
 export const FilterSchema = z.object({
   roles: z.array(z.enum(ROLE_FAMILIES)).max(ROLE_FAMILIES.length).default([]),
   exclude_keywords: z.array(z.string().trim().min(1).max(100)).max(100).default([]),
+  /** Non-empty = hard filter; jobs with unknown level fail unless 'unknown' is listed. */
   seniority: z.array(z.enum(SENIORITIES)).max(SENIORITIES.length).default([]),
   locations: z.array(LocationSchema).max(50).default([]),
   sponsorship: z.enum(["required", "not_needed", "any"]).default("any"),

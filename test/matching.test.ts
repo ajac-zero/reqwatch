@@ -71,7 +71,16 @@ describe("evaluate", () => {
     // unknown sponsorship, no grad filter: 0.4+0.25+0.2+0.15*(0.5+1)/2 = 0.9625
     const ev = evaluate({ ...baseJob, sponsorship: "unknown" }, F({ sponsorship: "required" }));
     expect(ev.score).toBeCloseTo(0.9625, 4);
-    expect(evaluate({ ...baseJob, sponsorship: "unknown", seniority: null }, F({ sponsorship: "required", seniority: ["entry"], min_score: 0.95 })).matched).toBe(false);
+    expect(evaluate({ ...baseJob, sponsorship: "unknown" }, F({ sponsorship: "required", min_score: 0.97 })).matched).toBe(false);
+  });
+  it("seniority is a hard filter: unknown/null fails unless 'unknown' is listed", () => {
+    for (const seniority of [null, "unknown"]) {
+      const j = { ...baseJob, seniority };
+      expect(evaluate(j, F({ seniority: ["intern", "new_grad"] })).matched).toBe(false);
+      expect(evaluate(j, F({ seniority: ["intern", "unknown"] }))).toMatchObject({ matched: true, score: 1, flags: [] });
+      expect(evaluate(j, F()).matched).toBe(true); // no seniority filter
+    }
+    expect(evaluate(baseJob, F({ seniority: ["unknown"] })).matched).toBe(false); // entry job, only unknown wanted
   });
   it("rejects invalid filters", () => {
     expect(() => F({ roles: ["nope"] })).toThrow();

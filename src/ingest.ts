@@ -1,5 +1,5 @@
 import { runBatched, type BoundStatement, type Db } from "./db";
-import { enrichJob } from "./enrich";
+import { ENRICH_VERSION, enrichJob } from "./enrich";
 import { matchJobs } from "./match";
 import { normalizeJob } from "./normalize";
 import type { BoardResult, Company } from "./types";
@@ -22,6 +22,8 @@ interface Row {
   content_hash: string;
   missed_polls: number;
   role_family: string | null;
+  seniority: string | null;
+  enrich_version: number;
   title: string;
   locations_json: string;
   url: string;
@@ -42,7 +44,7 @@ export async function ingestBoard(
 
   const existing = new Map(
     (await all<Row>(
-      "SELECT id, ext_id, status, content_hash, missed_polls, role_family, title, locations_json, url, posted_at, dedup_key FROM jobs WHERE company_id = ? AND ats = ?",
+      "SELECT id, ext_id, status, content_hash, missed_polls, role_family, seniority, enrich_version, title, locations_json, url, posted_at, dedup_key FROM jobs WHERE company_id = ? AND ats = ?",
       company.id, company.ats,
     )).map((r) => [r.ext_id, r]),
   );
@@ -56,7 +58,9 @@ export async function ingestBoard(
     const j = normalizeJob(company, raw);
     const prev = existing.get(j.extId);
     const locs = JSON.stringify(j.locations);
-    const needsEnrich = !prev || prev.content_hash !== j.contentHash || prev.role_family === null;
+    // One-off backfill: unchanged jobs still unknown after an older enrichment get re-enriched once per ENRICH_VERSION.
+    const reenrich = !!prev && prev.seniority === "unknown" && prev.enrich_version < ENRICH_VERSION;
+    const needsEnrich = !prev || prev.content_hash !== j.contentHash || prev.role_family === null || reenrich;
     const e = needsEnrich ? enrichJob({ title: j.title, locations: j.locations, description: raw.description }) : null;
     const ev = e && [
       e.countries.length ? `,${e.countries.join(",")},` : "", e.remote ? 1 : 0, e.sponsorship, e.role_family,
@@ -66,10 +70,10 @@ export async function ingestBoard(
       queue(
         `INSERT INTO jobs (company_id, ats, ext_id, title, locations_json, url, posted_at, first_seen_at,
            last_seen_at, last_changed_at, status, content_hash, dedup_key, missed_polls, reposted,
-           country_set, remote, sponsorship, role_family, seniority, grad_window_start, grad_window_end, employment_type)
-         VALUES (?,?,?,?,?,?,?,?,?,?, 'open', ?,?,0,0, ?,?,?,?,?,?,?,?)`,
+           country_set, remote, sponsorship, role_family, seniority, grad_window_start, grad_window_end, employment_type, enrich_version)
+         VALUES (?,?,?,?,?,?,?,?,?,?, 'open', ?,?,0,0, ?,?,?,?,?,?,?,?,?)`,
         company.id, company.ats, j.extId, j.title, locs, j.url, j.postedAt, now, now, now, j.contentHash, j.dedupKey,
-        ...ev!,
+        ...ev!, ENRICH_VERSION,
       );
       touched.push({ extId: j.extId, dedupKey: j.dedupKey });
       continue;
@@ -80,7 +84,7 @@ export async function ingestBoard(
     // D1 bills rows written: an unchanged, live job is not rewritten. Liveness is "present in the latest
     // complete feed", tracked by companies.last_ok_at; jobs.last_seen_at only moves on a write.
     if (
-      !reopen && !changed && prev.missed_polls === 0 && prev.role_family !== null && prev.title === j.title &&
+      !reopen && !changed && prev.missed_polls === 0 && !reenrich && prev.role_family !== null && prev.title === j.title &&
       prev.locations_json === locs && prev.url === j.url && prev.posted_at === j.postedAt && prev.dedup_key === j.dedupKey
     ) continue;
     queue(
@@ -92,12 +96,12 @@ export async function ingestBoard(
          sponsorship = COALESCE(?, sponsorship), role_family = COALESCE(?, role_family),
          seniority = COALESCE(?, seniority), grad_window_start = CASE WHEN ? THEN ? ELSE grad_window_start END,
          grad_window_end = CASE WHEN ? THEN ? ELSE grad_window_end END,
-         employment_type = COALESCE(?, employment_type)
+         employment_type = COALESCE(?, employment_type), enrich_version = COALESCE(?, enrich_version)
        WHERE id = ?`,
       now, reopen ? 1 : 0, j.title, locs, j.url, j.postedAt, j.contentHash, j.dedupKey,
       changed ? 1 : 0, reopen ? 1 : 0, now,
       ev?.[0] ?? null, ev?.[1] ?? null, ev?.[2] ?? null, ev?.[3] ?? null, ev?.[4] ?? null,
-      ev ? 1 : 0, ev?.[5] ?? null, ev ? 1 : 0, ev?.[6] ?? null, ev?.[7] ?? null,
+      ev ? 1 : 0, ev?.[5] ?? null, ev ? 1 : 0, ev?.[6] ?? null, ev?.[7] ?? null, ev ? ENRICH_VERSION : null,
       prev.id,
     );
     if (reopen) out.reopened.push(prev.id);

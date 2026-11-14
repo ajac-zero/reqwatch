@@ -1,0 +1,1 @@
+ALTER TABLE jobs ADD COLUMN enrich_version INTEGER DEFAULT 1;

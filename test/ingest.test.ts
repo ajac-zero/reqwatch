@@ -184,6 +184,33 @@ describe("enrichment on ingest", () => {
   });
 });
 
+describe("seniority re-enrichment", () => {
+  const sen = () => ctx.raw.prepare("SELECT seniority, enrich_version v FROM jobs").get() as any;
+  const desc = "<p>We are hiring new grads for this role. Class of 2027 welcome.</p>";
+  it("re-enriches an unchanged unknown-seniority job once when ENRICH_VERSION is newer", async () => {
+    await ingestBoard(ctx.db, co, feed(rj("1", "Software Engineer (L3)", ["NYC"], desc)), T1);
+    expect(sen()).toEqual({ seniority: "new_grad", v: 2 });
+    // Simulate a pre-upgrade row: same content_hash, unknown seniority, old version.
+    ctx.raw.prepare("UPDATE jobs SET seniority = 'unknown', enrich_version = 1").run();
+    const rec = recordingDb(ctx.db);
+    const out = await ingestBoard(rec.db, co, feed(rj("1", "Software Engineer (L3)", ["NYC"], desc)), T2);
+    expect(sen()).toEqual({ seniority: "new_grad", v: 2 });
+    expect(rec.changes()).toEqual([1, 1]); // the job row once, plus the company row
+    expect(out).toEqual(empty);
+    const again = recordingDb(ctx.db);
+    await ingestBoard(again.db, co, feed(rj("1", "Software Engineer (L3)", ["NYC"], desc)), T3);
+    expect(again.changes()).toEqual([1]); // idempotent: company row only
+  });
+  it("bumps the version even when still unknown, and leaves known seniority and unknown future versions alone", async () => {
+    await ingestBoard(ctx.db, co, feed(rj("1", "Software Engineer", ["NYC"], "Build things."), rj("2", "Software Engineer II", ["NYC"], "x")), T1);
+    ctx.raw.prepare("UPDATE jobs SET enrich_version = 1").run();
+    await ingestBoard(ctx.db, co, feed(rj("1", "Software Engineer", ["NYC"], "Build things."), rj("2", "Software Engineer II", ["NYC"], "x")), T2);
+    expect(ctx.raw.prepare("SELECT ext_id, seniority, enrich_version v FROM jobs ORDER BY id").all()).toEqual([
+      { ext_id: "1", seniority: "unknown", v: 2 }, { ext_id: "2", seniority: "mid", v: 1 },
+    ]);
+  });
+});
+
 describe("ingestBoard round trips", () => {
   const board = (n: number, desc = "d") =>
     feed(...Array.from({ length: n }, (_, k) => rj(`j${k}`, `Software Engineer ${k % 700}`, [k % 2 ? "London, UK" : "New York, NY"], desc)));

@@ -1231,5 +1231,501 @@
    "sponsorship": "unknown",
    "grad_window": null
   }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>We are hiring new grads to join our platform team. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer (L3)",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<h2>About the role</h2><p>This position is open to recent graduates and new graduates of any CS program. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>This is an entry-level position on our payments team. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "entry",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Backend Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p><h3>Who you are</h3><p>You are a university graduate with 0-2 years of experience.</p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "entry",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Early career engineers welcome. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Frontend Developer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>No prior experience required: we will teach you. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Join our internship this summer and build real features. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "intern",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Part of our intern program for students. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "intern",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Developer Success Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Great for people starting out, 0 to 2 years of experience. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "entry",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Open to university graduates and recent grads. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer, Web Products",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Entry level role for engineers beginning their careers. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "entry",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p><h2>About the role</h2><p>This role is for new grads who want to learn fast.</p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer (L3)",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Developer Success Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer, Web Products",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p><p>About us: we hire new grads every year and run a large internship program.</p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p><p>Perks include entry-level friendly benefits.</p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Senior Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>You will mentor interns and new grads. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "senior",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Staff Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>We hire new grads every year; our internship program is great. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "staff_plus",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Principal Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Early career engineers will look to you for guidance. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "staff_plus",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Engineering Manager",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>You will manage new graduates and interns. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "manager",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer (L5)",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Recent graduates join our org often. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer IV",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Our new grad program is renowned. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>You will mentor interns and review their code. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>You will help run our internship program. 5+ years of experience required. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>This is not an entry-level role. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Entry-level or new grad candidates, plus an internship program for students. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>New grad friendly. Requires at least 4 years of experience. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer, Platform",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Graduating in 2027? Apply for this new grad role. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. Our team builds reliable backend services in Python and Go and works closely with product and design to ship every week. </p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2027-01",
+    "2027-12"
+   ]
+  }
  }
 ]

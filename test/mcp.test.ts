@@ -211,6 +211,21 @@ describe("tools", () => {
     expect((await tool(A, "delete_interest", { id: iid })).isError).toBe(true);
   });
 
+  it("update_interest and delete_interest accept id or interest_id; conflicting values are rejected", async () => {
+    const mk = async () => (await tool(A, "create_interest", { name: "x" })).structuredContent.interest.id as string;
+    const a = await mk();
+    expect((await tool(A, "update_interest", { interest_id: a, patch: { name: "viaAlias" } })).structuredContent.interest.name).toBe("viaAlias");
+    expect((await tool(A, "update_interest", { id: a, interest_id: a, patch: { name: "both" } })).structuredContent.interest.name).toBe("both");
+    const bad = await tool(A, "update_interest", { id: a, interest_id: "other", patch: { name: "no" } });
+    expect(bad.isError).toBe(true);
+    expect(bad.content[0]!.text).toContain("differ");
+    expect((await tool(A, "delete_interest", { id: a, interest_id: "other" })).isError).toBe(true);
+    expect((await tool(A, "delete_interest", {})).isError).toBe(true);
+    expect((await tool(A, "delete_interest", { interest_id: a })).structuredContent).toEqual({ deleted: true });
+    const b = await mk();
+    expect((await tool(A, "delete_interest", { id: b })).structuredContent).toEqual({ deleted: true });
+  });
+
   it("get_job flags closed jobs prominently", async () => {
     const open = addJob(co);
     const closed = addJob(co, { status: "closed" });

@@ -9,6 +9,8 @@ export const ROLE_FAMILIES = [
   "software_engineering", "ml_ai", "data", "infra_sre", "security", "product", "design", "other",
 ] as const;
 export const SENIORITIES = ["intern", "new_grad", "entry", "mid", "senior", "staff_plus", "manager", "unknown"] as const;
+/** Bump when enrichment logic improves; unchanged jobs with unknown seniority are re-enriched once per bump. */
+export const ENRICH_VERSION = 2;
 export type RoleFamily = (typeof ROLE_FAMILIES)[number];
 export type Seniority = (typeof SENIORITIES)[number];
 export type Sponsorship = "offers" | "no" | "unknown";
@@ -70,7 +72,46 @@ export function roleFamily(title: string, description: string): RoleFamily {
 }
 
 // ---------- seniority ----------
-export function seniority(title: string): Seniority {
+export function seniority(title: string, description = ""): Seniority {
+  const fromTitle = titleSeniority(title);
+  if (fromTitle !== "unknown" || TITLE_LEVEL_MARKERS.test(normText(title))) return fromTitle;
+  return descriptionSeniority(description);
+}
+
+// Level markers the title rules do not classify (L4+, IV and up): the title says "not junior", so the
+// description is never consulted.
+const TITLE_LEVEL_MARKERS = /\b(l[4-9]|l\d\d|iv|v|vi|[4-9])\b|\b(senior|staff|principal|lead|manager|director)\b/;
+
+const LOOKBACK_BLOCK = /\b(our|mentor\w*|manag\w*|supervis\w*|host\w*|run|runs|lead\w*|support\w*|not an?)\s+(?:[\w-]+\s+)?$/;
+const DESC_RULES: [Seniority, RegExp][] = [
+  ["new_grad", /\b(new grad(?:uate)?s?|university grad(?:uate)?s?|recent grad(?:uate)?s?|class of 20\d\d|graduating (?:in|between|by|from)\b[^.]{0,40}20\d\d|early careers?|no prior experience (?:is )?required)\b/g],
+  ["entry", /\b(entry[- ]level|0 ?(?:-|to) ?2 years)\b/g],
+  ["intern", /\b(internships?|intern program|(?:summer|fall|winter|spring) 20\d\d intern\w*)\b/g],
+];
+const HEADINGS = /\b(about the (?:role|job|position|opportunity)|who you are|about you|who we(?:'| a)re looking for)\b/g;
+const SENIOR_EXPERIENCE = /\b(?:[3-9]|1\d)\+ years|\bat least (?:[3-9]|1\d) years|\b(?:[3-9]|1\d) (?:or more )?years of (?:[\w-]+ ){0,3}experience/;
+const INTRO_CHARS = 600;
+const HEADING_CHARS = 400;
+
+/** High-precision level phrases, honoured only in the intro or right after an "About the role"-style heading. */
+function descriptionSeniority(description: string): Seniority {
+  const d = normText(description);
+  if (!d || SENIOR_EXPERIENCE.test(d)) return "unknown";
+  const spans: [number, number][] = [[0, INTRO_CHARS]];
+  for (const h of d.matchAll(HEADINGS)) spans.push([h.index!, h.index! + h[0].length + HEADING_CHARS]);
+  const found = new Set<Seniority>();
+  for (const [level, re] of DESC_RULES) {
+    for (const m of d.matchAll(re)) {
+      const at = m.index!;
+      if (!spans.some(([a, b]) => at >= a && at < b)) continue;
+      if (LOOKBACK_BLOCK.test(d.slice(Math.max(0, at - 30), at))) continue;
+      found.add(level);
+    }
+  }
+  return found.size === 1 ? [...found][0]! : "unknown";
+}
+
+function titleSeniority(title: string): Seniority {
   const t = normText(title);
   if (/\b(intern|interns|internship|co-?op|apprentice)\b/.test(t)) return "intern";
   if (/\b(new grads?|university grad\w*|graduate|early careers?|recent grad\w*|campus)\b/.test(t)) return "new_grad";
@@ -184,7 +225,7 @@ export function enrichJob(input: EnrichInput): Enrichment {
   const win = gradWindow(input.description, input.title);
   return {
     role_family: roleFamily(input.title, input.description),
-    seniority: seniority(input.title),
+    seniority: seniority(input.title, input.description),
     countries,
     remote,
     sponsorship: sponsorship(input.description),
