@@ -740,5 +740,103 @@
     "board_token": "cognition",
     "tier": 2,
     "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Sierra",
+    "ats": "ashby",
+    "board_token": "sierra",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Decagon",
+    "ats": "ashby",
+    "board_token": "decagon",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Abridge",
+    "ats": "ashby",
+    "board_token": "abridge",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Neon",
+    "ats": "ashby",
+    "board_token": "neon",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Resend",
+    "ats": "ashby",
+    "board_token": "resend",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Airbyte",
+    "ats": "ashby",
+    "board_token": "airbyte",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Browserbase",
+    "ats": "ashby",
+    "board_token": "browserbase",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Midjourney",
+    "ats": "ashby",
+    "board_token": "midjourney",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Suno",
+    "ats": "ashby",
+    "board_token": "suno",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Anyscale",
+    "ats": "ashby",
+    "board_token": "anyscale",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Crusoe",
+    "ats": "ashby",
+    "board_token": "crusoe",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Lambda",
+    "ats": "ashby",
+    "board_token": "lambda",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Cerebras",
+    "ats": "ashby",
+    "board_token": "cerebras",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Baseten",
+    "ats": "ashby",
+    "board_token": "baseten",
+    "tier": 2,
+    "verified_at": "2026-11-14"
   }
 ]
