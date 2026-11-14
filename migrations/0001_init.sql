@@ -28,6 +28,7 @@ CREATE TABLE jobs (
   dedup_key TEXT NOT NULL,
   missed_polls INTEGER NOT NULL DEFAULT 0,
   reposted INTEGER NOT NULL DEFAULT 0,
+  cross_posted INTEGER NOT NULL DEFAULT 0,
   UNIQUE (ats, company_id, ext_id)
 );
 

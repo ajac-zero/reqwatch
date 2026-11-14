@@ -55,6 +55,7 @@ describe("ingestBoard", () => {
       ["4002", "Software Engineer Intern (Summer 2027)", '["Remote - US"]', "https://boards.greenhouse.io/acme/jobs/4002", "2026-10-02T12:00:00-04:00", T1, T1, T1, "open", 0, 0],
       ["4003", "Software Engineer, New Grad", '["New York, NY"]', "https://boards.greenhouse.io/acme/jobs/4003", "2026-10-03T12:00:00-04:00", T1, T1, T1, "open", 0, 0],
     ]);
+    expect(r.map((x) => x.cross_posted)).toEqual([1, 0, 1]);
     expect(r[0].dedup_key).toBe(r[2].dedup_key);
     expect(r[0].dedup_key).not.toBe(r[1].dedup_key);
     expect(r[0].content_hash).toBe(r[2].content_hash);
@@ -144,6 +145,14 @@ describe("ingestBoard", () => {
     expect(out.new).toEqual([]);
     expect(rows()).toHaveLength(1);
     expect(rows()[0]).toMatchObject({ status: "open", reposted: 1, missed_polls: 0, first_seen_at: T1, last_seen_at: T4, last_changed_at: T4 });
+  });
+
+  it("clears cross_posted when the twin closes", async () => {
+    await ingestBoard(ctx.db, co, feed(rj("a"), rj("b")), T1);
+    expect(rows().map((r) => r.cross_posted)).toEqual([1, 1]);
+    await ingestBoard(ctx.db, co, feed(rj("a")), T2);
+    await ingestBoard(ctx.db, co, feed(rj("a")), T3);
+    expect(rows().map((r) => [r.status, r.cross_posted])).toEqual([["open", 0], ["closed", 0]]);
   });
 
   it("scopes by company: same ext_id in two companies stays separate", async () => {

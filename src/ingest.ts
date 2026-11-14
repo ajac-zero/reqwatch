@@ -95,6 +95,15 @@ export async function ingestBoard(
     await run("UPDATE companies SET fail_count = fail_count + 1 WHERE id = ?", company.id);
   }
 
+  // Persist the flag for every job of this company: open jobs sharing a dedup_key with another open job.
+  await run(
+    `UPDATE jobs SET cross_posted = CASE WHEN status = 'open' AND EXISTS (
+       SELECT 1 FROM jobs o WHERE o.company_id = jobs.company_id AND o.id != jobs.id
+         AND o.status = 'open' AND o.dedup_key = jobs.dedup_key) THEN 1 ELSE 0 END
+     WHERE company_id = ?`,
+    company.id,
+  );
+
   for (const id of touched) {
     const dup = await all<{ n: number }>(
       `SELECT COUNT(*) AS n FROM jobs WHERE company_id = ? AND id != ? AND status = 'open'
