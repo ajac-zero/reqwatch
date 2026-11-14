@@ -537,5 +537,68 @@
     "board_token": "nuro",
     "tier": 1,
     "verified_at": "2026-11-14"
+  },
+  {
+    "name": "CRED",
+    "ats": "lever",
+    "board_token": "cred",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Paytm",
+    "ats": "lever",
+    "board_token": "paytm",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Ro",
+    "ats": "lever",
+    "board_token": "ro",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Rover",
+    "ats": "lever",
+    "board_token": "rover",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "WeRide",
+    "ats": "lever",
+    "board_token": "weride",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Zeta",
+    "ats": "lever",
+    "board_token": "zeta",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Coupa",
+    "ats": "lever",
+    "board_token": "coupa",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Hive",
+    "ats": "lever",
+    "board_token": "hive",
+    "tier": 2,
+    "verified_at": "2026-11-14"
+  },
+  {
+    "name": "Belvedere Trading",
+    "ats": "lever",
+    "board_token": "belvederetrading",
+    "tier": 2,
+    "verified_at": "2026-11-14"
   }
 ]
