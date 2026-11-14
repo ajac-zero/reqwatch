@@ -1,0 +1,7 @@
+[
+  {"id": "a1b2c3d4-0001", "text": "Data Engineer, University Grad", "hostedUrl": "https://jobs.lever.co/acme/a1b2c3d4-0001",
+   "createdAt": 1790000000000, "categories": {"location": "San Francisco, CA", "allLocations": ["San Francisco, CA", "Seattle, WA"], "team": "Data"},
+   "descriptionPlain": "Work on pipelines."},
+  {"id": "a1b2c3d4-0002", "text": "ML Research Intern", "hostedUrl": "https://jobs.lever.co/acme/a1b2c3d4-0002",
+   "createdAt": 1790100000000, "categories": {"location": "Austin, TX"}, "descriptionPlain": "Research models."}
+]
