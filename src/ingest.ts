@@ -1,4 +1,5 @@
 import type { Db } from "./db";
+import { enrichJob } from "./enrich";
 import { normalizeJob } from "./normalize";
 import type { BoardResult, Company } from "./types";
 
@@ -19,6 +20,7 @@ interface Row {
   status: string;
   content_hash: string;
   missed_polls: number;
+  role_family: string | null;
 }
 
 export async function ingestBoard(
@@ -33,7 +35,7 @@ export async function ingestBoard(
 
   const existing = new Map(
     (await all<Row>(
-      "SELECT id, ext_id, status, content_hash, missed_polls FROM jobs WHERE company_id = ? AND ats = ?",
+      "SELECT id, ext_id, status, content_hash, missed_polls, role_family FROM jobs WHERE company_id = ? AND ats = ?",
       company.id, company.ats,
     )).map((r) => [r.ext_id, r]),
   );
@@ -46,12 +48,20 @@ export async function ingestBoard(
     const j = normalizeJob(company, raw);
     const prev = existing.get(j.extId);
     const locs = JSON.stringify(j.locations);
+    const needsEnrich = !prev || prev.content_hash !== j.contentHash || prev.role_family === null;
+    const e = needsEnrich ? enrichJob({ title: j.title, locations: j.locations, description: raw.description }) : null;
+    const ev = e && [
+      e.countries.length ? `,${e.countries.join(",")},` : "", e.remote ? 1 : 0, e.sponsorship, e.role_family,
+      e.seniority, e.grad_window_start, e.grad_window_end, e.employment_type,
+    ];
     if (!prev) {
       await run(
         `INSERT INTO jobs (company_id, ats, ext_id, title, locations_json, url, posted_at, first_seen_at,
-           last_seen_at, last_changed_at, status, content_hash, dedup_key, missed_polls, reposted)
-         VALUES (?,?,?,?,?,?,?,?,?,?, 'open', ?,?,0,0)`,
+           last_seen_at, last_changed_at, status, content_hash, dedup_key, missed_polls, reposted,
+           country_set, remote, sponsorship, role_family, seniority, grad_window_start, grad_window_end, employment_type)
+         VALUES (?,?,?,?,?,?,?,?,?,?, 'open', ?,?,0,0, ?,?,?,?,?,?,?,?)`,
         company.id, company.ats, j.extId, j.title, locs, j.url, j.postedAt, now, now, now, j.contentHash, j.dedupKey,
+        ...ev!,
       );
       const [{ id }] = (await all<{ id: number }>(
         "SELECT id FROM jobs WHERE company_id = ? AND ats = ? AND ext_id = ?", company.id, company.ats, j.extId,
@@ -66,10 +76,18 @@ export async function ingestBoard(
       `UPDATE jobs SET last_seen_at = ?, missed_polls = 0, status = 'open',
          reposted = CASE WHEN ? THEN 1 ELSE reposted END,
          title = ?, locations_json = ?, url = ?, posted_at = ?, content_hash = ?, dedup_key = ?,
-         last_changed_at = CASE WHEN ? OR ? THEN ? ELSE last_changed_at END
+         last_changed_at = CASE WHEN ? OR ? THEN ? ELSE last_changed_at END,
+         country_set = COALESCE(?, country_set), remote = COALESCE(?, remote),
+         sponsorship = COALESCE(?, sponsorship), role_family = COALESCE(?, role_family),
+         seniority = COALESCE(?, seniority), grad_window_start = CASE WHEN ? THEN ? ELSE grad_window_start END,
+         grad_window_end = CASE WHEN ? THEN ? ELSE grad_window_end END,
+         employment_type = COALESCE(?, employment_type)
        WHERE id = ?`,
       now, reopen ? 1 : 0, j.title, locs, j.url, j.postedAt, j.contentHash, j.dedupKey,
-      changed ? 1 : 0, reopen ? 1 : 0, now, prev.id,
+      changed ? 1 : 0, reopen ? 1 : 0, now,
+      ev?.[0] ?? null, ev?.[1] ?? null, ev?.[2] ?? null, ev?.[3] ?? null, ev?.[4] ?? null,
+      ev ? 1 : 0, ev?.[5] ?? null, ev ? 1 : 0, ev?.[6] ?? null, ev?.[7] ?? null,
+      prev.id,
     );
     if (reopen) out.reopened.push(prev.id);
     else if (changed) out.changed.push(prev.id);

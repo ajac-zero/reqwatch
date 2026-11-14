@@ -1,0 +1,1235 @@
+[
+ {
+  "title": "Software Engineer Intern, Summer 2027",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "<p>Join us for a 12-week internship. Summer 2027 internship open to students pursuing a BS or MS.</p>",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "intern",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2027-06",
+    "2027-08"
+   ]
+  }
+ },
+ {
+  "title": "Software Engineer, New Grad",
+  "locations": [
+   "San Francisco, CA, United States"
+  ],
+  "description": "We are hiring recent graduates. Class of 2027 candidates welcome. We offer visa sponsorship for qualified candidates.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "offers",
+   "grad_window": [
+    "2027-01",
+    "2027-12"
+   ]
+  }
+ },
+ {
+  "title": "Software Engineer I",
+  "locations": [
+   "Seattle, WA"
+  ],
+  "description": "Build backend services in Java. You must be authorized to work in the United States without sponsorship.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "entry",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "no",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Senior Software Engineer, Payments",
+  "locations": [
+   "Remote - US"
+  ],
+  "description": "5+ years of experience building distributed systems. We are unable to sponsor visas at this time.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "senior",
+   "countries": [
+    "US"
+   ],
+   "remote": true,
+   "sponsorship": "no",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Staff Software Engineer",
+  "locations": [
+   "Austin, TX"
+  ],
+  "description": "Lead technical direction for the platform team.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "staff_plus",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Principal Engineer",
+  "locations": [
+   "Boston, MA"
+  ],
+  "description": "Define architecture across the org. Python, Go, and distributed systems experience.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "staff_plus",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Engineering Manager, Backend",
+  "locations": [
+   "Chicago, IL"
+  ],
+  "description": "Manage a team of 6-8 engineers.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "manager",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Director of Engineering",
+  "locations": [
+   "Remote"
+  ],
+  "description": "Lead multiple teams across the company.",
+  "expected": {
+   "role_family": "other",
+   "seniority": "manager",
+   "countries": [],
+   "remote": true,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Machine Learning Engineer, New Grad",
+  "locations": [
+   "Mountain View, CA"
+  ],
+  "description": "Train and deploy deep learning models. Graduating between December 2026 and August 2027.",
+  "expected": {
+   "role_family": "ml_ai",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2026-12",
+    "2027-08"
+   ]
+  }
+ },
+ {
+  "title": "Machine Learning Intern",
+  "locations": [
+   "Palo Alto, CA"
+  ],
+  "description": "Research internship. Summer 2027 internship. Visa sponsorship available for international students.",
+  "expected": {
+   "role_family": "ml_ai",
+   "seniority": "intern",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "offers",
+   "grad_window": [
+    "2027-06",
+    "2027-08"
+   ]
+  }
+ },
+ {
+  "title": "Senior Research Scientist, NLP",
+  "locations": [
+   "London, UK"
+  ],
+  "description": "Publish and ship research on large language models.",
+  "expected": {
+   "role_family": "ml_ai",
+   "seniority": "senior",
+   "countries": [
+    "GB"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "AI Engineer",
+  "locations": [
+   "Remote - US"
+  ],
+  "description": "Build LLM-powered applications.",
+  "expected": {
+   "role_family": "ml_ai",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": true,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Data Engineer",
+  "locations": [
+   "Denver, CO"
+  ],
+  "description": "Build ETL pipelines with Spark and Airflow.",
+  "expected": {
+   "role_family": "data",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Data Scientist II",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "Analyze product experiments.",
+  "expected": {
+   "role_family": "data",
+   "seniority": "mid",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Data Analyst Intern",
+  "locations": [
+   "Chicago, IL"
+  ],
+  "description": "Fall 2027 internship working with SQL dashboards.",
+  "expected": {
+   "role_family": "data",
+   "seniority": "intern",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2027-09",
+    "2027-12"
+   ]
+  }
+ },
+ {
+  "title": "Senior Data Engineer",
+  "locations": [
+   "Toronto, ON, Canada"
+  ],
+  "description": "Own the warehouse. We do not offer visa sponsorship.",
+  "expected": {
+   "role_family": "data",
+   "seniority": "senior",
+   "countries": [
+    "CA"
+   ],
+   "remote": false,
+   "sponsorship": "no",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Site Reliability Engineer",
+  "locations": [
+   "Portland, OR"
+  ],
+  "description": "On-call rotation, Kubernetes, Terraform.",
+  "expected": {
+   "role_family": "infra_sre",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "DevOps Engineer II",
+  "locations": [
+   "Remote - US"
+  ],
+  "description": "Maintain CI/CD pipelines.",
+  "expected": {
+   "role_family": "infra_sre",
+   "seniority": "mid",
+   "countries": [
+    "US"
+   ],
+   "remote": true,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Senior Infrastructure Engineer",
+  "locations": [
+   "Dublin, Ireland"
+  ],
+  "description": "Run our cloud platform. Visa sponsorship is available.",
+  "expected": {
+   "role_family": "infra_sre",
+   "seniority": "senior",
+   "countries": [
+    "IE"
+   ],
+   "remote": false,
+   "sponsorship": "offers",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Platform Engineer, New Grad",
+  "locations": [
+   "Atlanta, GA"
+  ],
+  "description": "Early career role. Graduating in 2027.",
+  "expected": {
+   "role_family": "infra_sre",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2027-01",
+    "2027-12"
+   ]
+  }
+ },
+ {
+  "title": "Security Engineer",
+  "locations": [
+   "Washington, DC"
+  ],
+  "description": "Threat modeling and vulnerability management. Must be a U.S. citizen.",
+  "expected": {
+   "role_family": "security",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Application Security Engineer, Entry Level",
+  "locations": [
+   "Remote - US"
+  ],
+  "description": "Help secure our product. We cannot sponsor employment visas.",
+  "expected": {
+   "role_family": "security",
+   "seniority": "entry",
+   "countries": [
+    "US"
+   ],
+   "remote": true,
+   "sponsorship": "no",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Senior Security Researcher",
+  "locations": [
+   "Tel Aviv, Israel"
+  ],
+  "description": "Vulnerability research.",
+  "expected": {
+   "role_family": "security",
+   "seniority": "senior",
+   "countries": [
+    "IL"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Product Manager",
+  "locations": [
+   "San Francisco, CA"
+  ],
+  "description": "Own the roadmap for our core product.",
+  "expected": {
+   "role_family": "product",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Associate Product Manager",
+  "locations": [
+   "New York, NY"
+  ],
+  "description": "Rotational APM program for new grads. Class of 2027.",
+  "expected": {
+   "role_family": "product",
+   "seniority": "entry",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2027-01",
+    "2027-12"
+   ]
+  }
+ },
+ {
+  "title": "Senior Product Manager, Growth",
+  "locations": [
+   "Remote - US"
+  ],
+  "description": "Drive growth experiments.",
+  "expected": {
+   "role_family": "product",
+   "seniority": "senior",
+   "countries": [
+    "US"
+   ],
+   "remote": true,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Product Designer",
+  "locations": [
+   "Brooklyn, NY"
+  ],
+  "description": "Design end-to-end experiences.",
+  "expected": {
+   "role_family": "design",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Senior UX Researcher",
+  "locations": [
+   "Remote - Canada"
+  ],
+  "description": "Run generative research.",
+  "expected": {
+   "role_family": "design",
+   "seniority": "senior",
+   "countries": [
+    "CA"
+   ],
+   "remote": true,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Design Intern",
+  "locations": [
+   "Los Angeles, CA"
+  ],
+  "description": "Summer 2027 internship in our brand studio.",
+  "expected": {
+   "role_family": "design",
+   "seniority": "intern",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2027-06",
+    "2027-08"
+   ]
+  }
+ },
+ {
+  "title": "Account Executive",
+  "locations": [
+   "Chicago, IL"
+  ],
+  "description": "Sell our product to mid-market customers.",
+  "expected": {
+   "role_family": "other",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Recruiting Coordinator",
+  "locations": [
+   "Austin, TX"
+  ],
+  "description": "Coordinate interviews.",
+  "expected": {
+   "role_family": "other",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Mechanical Engineer",
+  "locations": [
+   "Hawthorne, CA"
+  ],
+  "description": "Design rocket components using CAD tools.",
+  "expected": {
+   "role_family": "other",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Berlin, Germany"
+  ],
+  "description": "Join our Berlin office. Hybrid work.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "DE"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Backend Developer",
+  "locations": [
+   "Warsaw, Poland"
+  ],
+  "description": "Kotlin and PostgreSQL.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "PL"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Frontend Engineer",
+  "locations": [
+   "Amsterdam, Netherlands"
+  ],
+  "description": "React and TypeScript. Visa sponsorship available for relocation.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "NL"
+   ],
+   "remote": false,
+   "sponsorship": "offers",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Graduate Software Engineer",
+  "locations": [
+   "London, UK"
+  ],
+  "description": "Graduates graduating in 2027 are encouraged to apply.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "new_grad",
+   "countries": [
+    "GB"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2027-01",
+    "2027-12"
+   ]
+  }
+ },
+ {
+  "title": "Software Engineer, Mobile (iOS)",
+  "locations": [
+   "Sydney, Australia"
+  ],
+  "description": "Swift and SwiftUI.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "AU"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Senior Full Stack Developer",
+  "locations": [
+   "Bangalore, India"
+  ],
+  "description": "Node and React.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "senior",
+   "countries": [
+    "IN"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Singapore"
+  ],
+  "description": "Distributed systems in Go.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "SG"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Developer Co-op",
+  "locations": [
+   "Waterloo, ON, Canada"
+  ],
+  "description": "Fall 2027 co-op term.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "intern",
+   "countries": [
+    "CA"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2027-09",
+    "2027-12"
+   ]
+  }
+ },
+ {
+  "title": "Staff ML Engineer",
+  "locations": [
+   "Paris, France"
+  ],
+  "description": "Lead ML infra.",
+  "expected": {
+   "role_family": "ml_ai",
+   "seniority": "staff_plus",
+   "countries": [
+    "FR"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "London"
+  ],
+  "description": "Our London team is growing.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Remote"
+  ],
+  "description": "Work from anywhere.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [],
+   "remote": true,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "New York, NY",
+   "London, UK"
+  ],
+  "description": "Hybrid across offices.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "GB",
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer, Infrastructure",
+  "locations": [
+   "Remote - US",
+   "Remote - Canada"
+  ],
+  "description": "Remote-first team.",
+  "expected": {
+   "role_family": "infra_sre",
+   "seniority": "unknown",
+   "countries": [
+    "CA",
+    "US"
+   ],
+   "remote": true,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Bellevue, WA"
+  ],
+  "description": "Unfortunately we will not sponsor visas for this role.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "no",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "San Jose, CA"
+  ],
+  "description": "Candidates must be authorized to work in the US without sponsorship, now or in the future.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "no",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Cambridge, MA"
+  ],
+  "description": "We do not offer visa sponsorship for this position.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "no",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Raleigh, NC"
+  ],
+  "description": "We sponsor H-1B visas for strong candidates.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "offers",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Minneapolis, MN"
+  ],
+  "description": "Visa sponsorship available.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "offers",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Salt Lake City, UT"
+  ],
+  "description": "We will sponsor visas for the right candidate. Python experience required.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "offers",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Philadelphia, PA"
+  ],
+  "description": "We offer visa sponsorship to international candidates; however we are unable to sponsor for contract roles.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Pittsburgh, PA"
+  ],
+  "description": "Visa sponsorship available for some teams, but this role cannot sponsor.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Miami, FL"
+  ],
+  "description": "Great benefits and 401k.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer, University Grad",
+  "locations": [
+   "Redmond, WA"
+  ],
+  "description": "Graduating between June 2026 and June 2027 with a CS degree.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2026-06",
+    "2027-06"
+   ]
+  }
+ },
+ {
+  "title": "Software Engineer Intern",
+  "locations": [
+   "Remote - US"
+  ],
+  "description": "Start date in June 2027. We do not provide sponsorship.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "intern",
+   "countries": [
+    "US"
+   ],
+   "remote": true,
+   "sponsorship": "no",
+   "grad_window": [
+    "2027-06",
+    "2027-06"
+   ]
+  }
+ },
+ {
+  "title": "Early Career Data Scientist",
+  "locations": [
+   "Boston, MA"
+  ],
+  "description": "Candidates graduating in May 2027.",
+  "expected": {
+   "role_family": "data",
+   "seniority": "new_grad",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2027-05",
+    "2027-05"
+   ]
+  }
+ },
+ {
+  "title": "Engineer I, Backend",
+  "locations": [
+   "Dallas, TX"
+  ],
+  "description": "Entry-level role.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "entry",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Lead Data Scientist",
+  "locations": [
+   "Remote - US"
+  ],
+  "description": "Mentor a team of analysts.",
+  "expected": {
+   "role_family": "data",
+   "seniority": "staff_plus",
+   "countries": [
+    "US"
+   ],
+   "remote": true,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Senior Manager, Machine Learning",
+  "locations": [
+   "Seattle, WA"
+  ],
+  "description": "Lead ML org.",
+  "expected": {
+   "role_family": "ml_ai",
+   "seniority": "manager",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Junior Web Developer",
+  "locations": [
+   "Nashville, TN"
+  ],
+  "description": "HTML, CSS, JavaScript.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "entry",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer III",
+  "locations": [
+   "Remote - US"
+  ],
+  "description": "Own large systems.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "senior",
+   "countries": [
+    "US"
+   ],
+   "remote": true,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Cloud Engineer",
+  "locations": [
+   "Mexico City, Mexico"
+  ],
+  "description": "AWS and Terraform.",
+  "expected": {
+   "role_family": "infra_sre",
+   "seniority": "unknown",
+   "countries": [
+    "MX"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Quantitative Researcher Intern",
+  "locations": [
+   "New York, New York, United States"
+  ],
+  "description": "Summer 2027 internship.",
+  "expected": {
+   "role_family": "data",
+   "seniority": "intern",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2027-06",
+    "2027-08"
+   ]
+  }
+ },
+ {
+  "title": "Research Engineer, AI Safety",
+  "locations": [
+   "San Francisco, California"
+  ],
+  "description": "Work on alignment and large language models.",
+  "expected": {
+   "role_family": "ml_ai",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer",
+  "locations": [
+   "Springfield, IL"
+  ],
+  "description": "Start date: September 2027. Full-time role.",
+  "expected": {
+   "role_family": "software_engineering",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": [
+    "2027-09",
+    "2027-09"
+   ]
+  }
+ },
+ {
+  "title": "Principal Product Designer",
+  "locations": [
+   "Remote - UK"
+  ],
+  "description": "Lead design across product lines.",
+  "expected": {
+   "role_family": "design",
+   "seniority": "staff_plus",
+   "countries": [
+    "GB"
+   ],
+   "remote": true,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Detection Engineer",
+  "locations": [
+   "Reston, VA"
+  ],
+  "description": "Build SIEM detections.",
+  "expected": {
+   "role_family": "security",
+   "seniority": "unknown",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Software Engineer, Platform",
+  "locations": [
+   "Lisbon, Portugal"
+  ],
+  "description": "Visa sponsorship is not available.",
+  "expected": {
+   "role_family": "infra_sre",
+   "seniority": "unknown",
+   "countries": [
+    "PT"
+   ],
+   "remote": false,
+   "sponsorship": "no",
+   "grad_window": null
+  }
+ },
+ {
+  "title": "Technical Program Manager",
+  "locations": [
+   "Seattle, WA"
+  ],
+  "description": "Drive cross-team programs.",
+  "expected": {
+   "role_family": "other",
+   "seniority": "manager",
+   "countries": [
+    "US"
+   ],
+   "remote": false,
+   "sponsorship": "unknown",
+   "grad_window": null
+  }
+ }
+]

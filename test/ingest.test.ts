@@ -166,3 +166,18 @@ describe("ingestBoard", () => {
     expect(rows().map((r) => r.status)).toEqual(["open", "closed"]);
   });
 });
+
+describe("enrichment on ingest", () => {
+  const enriched = () => ctx.raw.prepare(
+    "SELECT country_set, remote, sponsorship, role_family, seniority, grad_window_start, employment_type FROM jobs",
+  ).all() as any[];
+  it("enriches new jobs and re-enriches when the description changes", async () => {
+    await ingestBoard(ctx.db, co, feed(rj("1", "Software Engineer Intern", ["Remote - US"], "Summer 2027 internship. We do not offer visa sponsorship.")), T1);
+    expect(enriched()).toEqual([{
+      country_set: ",US,", remote: 1, sponsorship: "no", role_family: "software_engineering",
+      seniority: "intern", grad_window_start: "2027-06", employment_type: "intern",
+    }]);
+    await ingestBoard(ctx.db, co, feed(rj("1", "Software Engineer Intern", ["Remote - US"], "Summer 2027 internship. Visa sponsorship available.")), T2);
+    expect(enriched()[0].sponsorship).toBe("offers");
+  });
+});
