@@ -2,6 +2,7 @@ import type { Db } from "./db";
 import { pollCompany, type R2Like } from "./poll";
 import { handleAdminTokens } from "./auth";
 import { handleMcpRoute } from "./mcp/http";
+import { handleWaitlist } from "./waitlist";
 import { leaseCompany, selectDueCompanies } from "./scheduler";
 
 export interface QueueLike<T> {
@@ -88,6 +89,7 @@ export default {
     if (path === "/health") return health(env);
     if (path === "/mcp" || path === "/.well-known/oauth-protected-resource") return handleMcpRoute(req, env);
     if (path === "/admin/tokens") return handleAdminTokens(req, env);
+    if (path === "/api/waitlist") return handleWaitlist(req, env);
     return new Response("reqwatch", { status: 200 });
   },
   async scheduled(_event: unknown, env: Env): Promise<void> {

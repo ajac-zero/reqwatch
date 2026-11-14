@@ -28,3 +28,9 @@ dead_letter_queue = "reqwatch-fetch-dlq"
 # [[r2_buckets]]
 # binding = "SNAPSHOTS"
 # bucket_name = "reqwatch-snapshots"
+
+# Static landing page. Everything not listed in run_worker_first is served from ./public;
+# listed paths always run the Worker. Add new Worker routes here.
+[assets]
+directory = "./public"
+run_worker_first = ["/api/*", "/mcp", "/health", "/admin/*", "/.well-known/*"]

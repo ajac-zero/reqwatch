@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>reqwatch: your AI agent, told when new roles match</title>
+<meta name="description" content="Open-source (AGPL-3.0) MCP server that tells your AI agent when new job openings match your interests. Reads employers' own Greenhouse, Lever and Ashby boards and checks each role is still live.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<style>
+:root{--bg:#faf8f4;--fg:#1d1b17;--mute:#5d584f;--line:#ddd7ca;--card:#fff;--accent:#0b5c4a;--accent-fg:#fff;--code:#f0ece2;--focus:#0b5c4a}
+@media (prefers-color-scheme:dark){:root{--bg:#14130f;--fg:#efebe1;--mute:#a8a294;--line:#34312a;--card:#1c1b16;--accent:#6fd3b3;--accent-fg:#0d1511;--code:#1f1d17;--focus:#6fd3b3}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:1.0625rem/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:62rem;margin:0 auto;padding:0 1.25rem}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+a{color:var(--accent);text-underline-offset:.2em}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
+header{padding:1.25rem 0;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.logo{font-weight:700;letter-spacing:-.01em;color:var(--fg);text-decoration:none}
+.logo span{color:var(--accent)}
+nav a{font-size:.95rem;color:var(--mute)}
+.hero{padding:3.5rem 0 3rem;max-width:44rem}
+h1{font-size:clamp(2rem,5.5vw,3.25rem);line-height:1.12;letter-spacing:-.025em;margin:0 0 1rem}
+.lede{font-size:1.2rem;color:var(--mute);margin:0 0 .75rem}
+.scope{font-size:.95rem;color:var(--mute);margin:0 0 2rem}
+.cta{display:flex;flex-wrap:wrap;gap:1.5rem;align-items:flex-start}
+.btn{display:inline-block;min-height:44px;padding:.65rem 1.2rem;border-radius:8px;font:inherit;font-weight:600;text-decoration:none;cursor:pointer;border:2px solid var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-fg)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+form{display:flex;flex-direction:column;gap:.5rem;min-width:min(100%,22rem)}
+label{font-size:.9rem;font-weight:600}
+.row{display:flex;gap:.5rem;flex-wrap:wrap}
+input[type=email]{flex:1 1 12rem;min-height:44px;padding:.6rem .8rem;font:inherit;color:var(--fg);background:var(--card);border:2px solid var(--mute);border-radius:8px}
+input[type=email]:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-color:var(--focus)}
+.banner{margin:0 0 1rem;padding:.75rem 1rem;border-radius:8px;font-weight:600;color:var(--fg);background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent)}
+.banner.err{border-left-color:var(--fg)}
+.banner[hidden]{display:none}
+.hint{font-size:.85rem;color:var(--mute);margin:0}
+section{padding:3rem 0;border-top:1px solid var(--line)}
+h2{font-size:1.6rem;letter-spacing:-.015em;margin:0 0 1.5rem}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+ol li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.25rem}
+.n{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--accent);font-weight:700;font-size:.9rem}
+ol h3{margin:.25rem 0 .5rem;font-size:1.15rem}
+ol p{margin:0;color:var(--mute)}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:4px;font-size:.92em}
+.status{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:1.25rem 1.5rem;max-width:44rem}
+.status p{margin:.5rem 0 0}
+.facts{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));margin:0;padding:0;list-style:none}
+.facts li{color:var(--mute)}
+.facts b{color:var(--fg);display:block}
+footer{border-top:1px solid var(--line);padding:2rem 0 3rem;color:var(--mute);font-size:.9rem}
+@media (prefers-reduced-motion:no-preference){.btn{transition:filter .15s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<a class="logo mono" href="#top">req<span>watch</span></a>
+<nav aria-label="Primary"><a href="https://github.com/ajac-zero/reqwatch">Source on GitHub</a></nav>
+</header>
+<main id="top">
+<div class="hero">
+<div id="ok" class="banner" role="status" hidden>You're on the list. One email when hosted opens.</div>
+<div id="err" class="banner err" role="status" hidden>That didn't work. Check the address and try again.</div>
+<script>
+var q=new URLSearchParams(location.search),b=q.get("joined")?"ok":q.get("error")?"err":null;
+if(b)document.getElementById(b).hidden=false;
+</script>
+<h1>Your AI agent, told when new roles match.</h1>
+<p class="lede">reqwatch is an open-source MCP server that reads employers' own job boards and tells your agent about new openings that fit your interests, after checking each one is still live.</p>
+<p class="scope">Starting with US new-grad and intern tech roles, with sponsorship and graduation-window filters.</p>
+<div class="cta">
+<a class="btn primary" href="https://github.com/ajac-zero/reqwatch">Self-host free</a>
+<form method="post" action="/api/waitlist">
+<label for="email">Join the hosted waitlist</label>
+<div class="row">
+<input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+<button class="btn ghost" type="submit">Join waitlist</button>
+</div>
+<p class="hint">One email when hosted opens. Nothing else.</p>
+</form>
+</div>
+</div>
+
+<section aria-labelledby="how">
+<h2 id="how">How it works</h2>
+<ol>
+<li><span class="n">01</span><h3>Set your interests</h3><p>Choose roles, locations, whether you need visa sponsorship, and your graduation window.</p></li>
+<li><span class="n">02</span><h3>Your agent calls <code>list_matches</code></h3><p>Any MCP client can ask what's new since it last looked. No special integration needed.</p></li>
+<li><span class="n">03</span><h3>Get verified-live roles</h3><p>Results come straight from Greenhouse, Lever and Ashby boards, and each role is re-checked as still open.</p></li>
+</ol>
+</section>
+
+<section aria-labelledby="status">
+<h2 id="status">Honest status</h2>
+<div class="status">
+<p><strong>What works today:</strong> the <code>list_matches</code> tool works with every MCP client.</p>
+<p>Push notifications are an upgrade, not the foundation: most clients don't surface them yet, so don't count on being interrupted. Ask your agent, and it will tell you what's new.</p>
+</div>
+</section>
+
+<section aria-labelledby="why">
+<h2 id="why">Built to be trusted</h2>
+<ul class="facts">
+<li><b>Primary sources</b>Employers' own ATS boards, not scraped aggregators.</li>
+<li><b>Still-live checks</b>Closed postings are filtered out before your agent sees them.</li>
+<li><b>Open source, AGPL-3.0</b>Read it, run it, change it. Self-hosting is free.</li>
+</ul>
+</section>
+</main>
+<footer>
+<p>reqwatch is licensed AGPL-3.0. <a href="https://github.com/ajac-zero/reqwatch">github.com/ajac-zero/reqwatch</a></p>
+</footer>
+</div>
+</body>
+</html>
