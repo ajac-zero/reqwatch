@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { authenticateApiToken, checkRateLimit, type Authenticator } from "../auth";
+import { checkRateLimit, type Authenticator } from "../auth";
+import { authenticateAny, oauthConfigured } from "../oauth";
 import type { Env } from "../index";
 import { TOOLS, ToolError, toolList } from "./tools";
 
@@ -22,7 +23,7 @@ const origin = (req: Request) => new URL(req.url).origin;
 export function protectedResourceMetadata(req: Request, env: Env): Response {
   return Response.json({
     resource: `${origin(req)}/mcp`,
-    authorization_servers: env.AUTH_ISSUER ? [env.AUTH_ISSUER] : [],
+    authorization_servers: env.AUTH_ISSUER ? [env.AUTH_ISSUER] : oauthConfigured(env) ? [origin(req)] : [],
     bearer_methods_supported: ["header"],
   });
 }
@@ -33,7 +34,7 @@ const unauthorized = (req: Request) =>
     headers: { "WWW-Authenticate": `Bearer resource_metadata="${origin(req)}/.well-known/oauth-protected-resource"` },
   });
 
-export async function handleMcpRoute(req: Request, env: Env, authenticate: Authenticator = authenticateApiToken): Promise<Response> {
+export async function handleMcpRoute(req: Request, env: Env, authenticate: Authenticator = authenticateAny): Promise<Response> {
   const path = new URL(req.url).pathname;
   if (path === "/.well-known/oauth-protected-resource") {
     return req.method === "GET" ? protectedResourceMetadata(req, env) : new Response("Method not allowed", { status: 405, headers: { Allow: "GET" } });
