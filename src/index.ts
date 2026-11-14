@@ -1,5 +1,7 @@
 import type { Db } from "./db";
 import { pollCompany, type R2Like } from "./poll";
+import { handleAdminTokens } from "./auth";
+import { handleMcpRoute } from "./mcp/http";
 import { leaseCompany, selectDueCompanies } from "./scheduler";
 
 export interface QueueLike<T> {
@@ -11,6 +13,10 @@ export interface Env {
   FETCH_QUEUE: QueueLike<FetchMessage>;
   /** Optional raw snapshot bucket. */
   SNAPSHOTS?: R2Like;
+  /** Enables POST /admin/tokens when set. */
+  ADMIN_SECRET?: string;
+  /** OAuth issuer advertised in /.well-known/oauth-protected-resource. */
+  AUTH_ISSUER?: string;
 }
 
 export interface FetchMessage {
@@ -78,7 +84,10 @@ export async function health(env: Env): Promise<Response> {
 
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
-    if (new URL(req.url).pathname === "/health") return health(env);
+    const path = new URL(req.url).pathname;
+    if (path === "/health") return health(env);
+    if (path === "/mcp" || path === "/.well-known/oauth-protected-resource") return handleMcpRoute(req, env);
+    if (path === "/admin/tokens") return handleAdminTokens(req, env);
     return new Response("reqwatch", { status: 200 });
   },
   async scheduled(_event: unknown, env: Env): Promise<void> {

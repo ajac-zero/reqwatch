@@ -15,6 +15,8 @@ export interface MatchItem {
     sponsorship: string;
     grad_window: { start: string | null; end: string | null };
     first_seen_at: string;
+    /** 'closed' means the posting is no longer live. */
+    status: "open" | "closed";
   };
   interest_id: string;
   score: number;
@@ -35,6 +37,7 @@ interface Row {
   grad_window_start: string | null;
   grad_window_end: string | null;
   first_seen_at: string;
+  status: "open" | "closed";
 }
 
 /**
@@ -54,7 +57,7 @@ export async function listMatches(
     await db
       .prepare(
         `SELECT e.seq, e.payload_json, j.id, j.title, c.name AS company, j.url, j.locations_json, j.seniority,
-           j.role_family, j.sponsorship, j.grad_window_start, j.grad_window_end, j.first_seen_at
+           j.role_family, j.sponsorship, j.grad_window_start, j.grad_window_end, j.first_seen_at, j.status
          FROM events e
          JOIN jobs j ON j.id = json_extract(e.payload_json, '$.job_id')
          JOIN companies c ON c.id = j.company_id
@@ -75,7 +78,7 @@ export async function listMatches(
         locations: JSON.parse(r.locations_json) as string[],
         seniority: r.seniority, role_family: r.role_family, sponsorship: r.sponsorship,
         grad_window: { start: r.grad_window_start, end: r.grad_window_end },
-        first_seen_at: r.first_seen_at,
+        first_seen_at: r.first_seen_at, status: r.status,
       },
       interest_id: p.interest_id,
       score: p.score,
