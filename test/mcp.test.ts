@@ -62,8 +62,8 @@ describe("protocol", () => {
     expect((await rpc(A, "ping")).body.result).toEqual({});
     const list = await rpc(A, "tools/list");
     expect(list.body.result.tools.map((t: any) => t.name).sort()).toEqual([
-      "create_interest", "delete_interest", "get_job", "get_stats", "list_companies", "list_interests", "list_matches",
-      "search_jobs", "update_interest",
+      "create_interest", "delete_interest", "delete_my_data", "get_job", "get_stats", "list_companies", "list_interests", "list_matches",
+      "search_jobs", "set_delivery", "update_interest",
     ]);
     const lm = list.body.result.tools.find((t: any) => t.name === "list_matches");
     expect(lm.description).toMatch(/start of every session/);

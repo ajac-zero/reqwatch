@@ -19,11 +19,19 @@ Create the first token with `POST /admin/tokens` (`Authorization: Bearer $ADMIN_
 For hosted use, an OAuth 2.1 server (GitHub login, PKCE, DCR) is also available: OAuth access tokens are accepted alongside API tokens. See [docs/self-host.md](docs/self-host.md).
 
 Tools: `create_interest`, `update_interest`, `delete_interest`, `list_interests`, `list_matches` (call at session start and
-periodically with the last `next_cursor`), `get_job`, `search_jobs` (open jobs), `list_companies`, `get_stats`.
+periodically with the last `next_cursor`), `get_job`, `search_jobs` (open jobs), `list_companies`, `get_stats`, `set_delivery`, `delete_my_data`.
 
-## MCP Events support: honest status
+## Delivery: honest status
 - **Primary: cursor tool.** `list_matches(since_cursor)` is idempotent and works with every MCP client today.
-- **Upgrade: push.** Server-initiated MCP notifications and webhooks are planned; most clients do not yet surface server notifications to the model, so push is an enhancement, never a requirement.
+- **Fallback: signed webhook (implemented).** `set_delivery{mode:"webhook", webhook_url}` registers one HTTPS endpoint; `mode:"poll"` removes it.
+  The signing secret is returned once (calling again rotates it) and stored AES-GCM encrypted with the `WEBHOOK_KEK` secret; without it webhook mode is refused.
+  URLs must be https on port 443 with a public domain name (no IP literals, credentials, `localhost`/`.internal`/`.local`); redirects are never followed.
+  Workers cannot check DNS resolution, so that is the extent of SSRF protection.
+  The existing cron (every 5 min) POSTs `{event_id, cursor, matches}` with `X-Reqwatch-Signature: sha256=HMAC_SHA256(secret, timestamp + "." + body)`,
+  `X-Reqwatch-Timestamp` and `X-Reqwatch-Event-Id`. Delivery is at-least-once: dedupe on `event_id` (stable per batch across retries).
+  Non-2xx, redirects and timeouts (10 s) retry after 1m, 5m, 30m, 2h, 6h, then every 24h; 7 days of continuous failure disables the webhook. Granularity is the cron interval, so this is not real-time.
+- **Not implemented: push.** Server-initiated MCP notifications / SSE are not built; most clients do not surface them to the model anyway.
+- `delete_my_data{confirm:true}` removes your interests, matches, events, webhook, API tokens and OAuth tokens/codes.
 
 ## Self-host on Cloudflare (quickstart stub)
 Runs on Cloudflare Workers + D1 + Queues + R2. Detailed steps will land with the first deployable release:

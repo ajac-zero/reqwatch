@@ -88,7 +88,7 @@ export async function handleMcpRoute(req: Request, env: Env, authenticate: Authe
         return toolResult(`invalid_arguments: ${args.error.issues.map((i) => `${i.path.join(".") || "(root)"}: ${i.message}`).join("; ")}`, true);
       }
       try {
-        const out = await tool.run({ db: env.DB, user_id: auth.user_id, scopes: auth.scopes }, args.data as never);
+        const out = await tool.run({ db: env.DB, user_id: auth.user_id, scopes: auth.scopes, webhook_kek: env.WEBHOOK_KEK }, args.data as never);
         const text = (out as { warning?: string }).warning ? `${(out as { warning: string }).warning}\n${JSON.stringify(out)}` : JSON.stringify(out);
         return toolResult(text, false, out);
       } catch (e) {

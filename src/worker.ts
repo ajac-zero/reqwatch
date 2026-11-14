@@ -1,5 +1,6 @@
 import type { Env, FetchMessage, MessageLike } from "./index";
 import { pollCompany } from "./poll";
+import { deliverWebhooks } from "./webhook";
 import { leaseCompany, selectDueCompanies } from "./scheduler";
 
 export const DUE_BATCH_LIMIT = 100;
@@ -13,6 +14,7 @@ export async function scheduled(env: Env, now = new Date().toISOString()): Promi
     await leaseCompany(env.DB, c.id, now);
     enqueued++;
   }
+  await deliverWebhooks(env, now);
   await env.DB
     .prepare("INSERT INTO meta (key, value) VALUES ('last_cron_at', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value")
     .bind(now)

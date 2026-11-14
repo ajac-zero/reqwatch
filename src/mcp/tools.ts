@@ -4,11 +4,13 @@ import { ROLE_FAMILIES, SENIORITIES } from "../enrich";
 import { FilterSchema, createInterest, deleteInterest, listInterests, updateInterest } from "../interests";
 import { backfillInterest } from "../match";
 import { listMatches } from "../matches";
+import { deleteUserData, removeWebhook, setWebhook, validateWebhookUrl } from "../webhook";
 
 export interface ToolContext {
   db: Db;
   user_id: string; // always from authentication, never from tool input
   scopes: string[];
+  webhook_kek?: string;
 }
 
 export interface Tool {
@@ -80,6 +82,35 @@ export const TOOLS: Tool[] = [
     input: z.object({ id: z.string() }),
     async run({ db, user_id }, a: { id: string }) {
       if (!(await deleteInterest(db, user_id, a.id))) throw new ToolError("not_found: no such interest");
+      return { deleted: true };
+    },
+  },
+  {
+    name: "set_delivery", scope: "write",
+    description:
+      "Choose how new matches reach you. mode 'poll' (default) removes any webhook; use list_matches. mode 'webhook' with an https " +
+      "webhook_url (public domain, port 443, no redirects followed) POSTs signed batches {event_id, cursor, matches}. The signing secret " +
+      "is returned once; calling again rotates it. Verify X-Reqwatch-Signature = sha256=HMAC_SHA256(secret, timestamp + '.' + body).",
+    input: z.object({ mode: z.enum(["poll", "webhook"]), webhook_url: z.string().max(2000).optional() }),
+    async run({ db, user_id, webhook_kek }, a: { mode: "poll" | "webhook"; webhook_url?: string }) {
+      if (a.mode === "poll") {
+        await removeWebhook(db, user_id);
+        return { mode: "poll" };
+      }
+      if (!webhook_kek) throw new ToolError("webhooks_unavailable: this server has no WEBHOOK_KEK configured; use poll mode");
+      if (!a.webhook_url) throw new ToolError("invalid_input: webhook_url is required for webhook mode");
+      const err = validateWebhookUrl(a.webhook_url);
+      if (err) throw new ToolError(`invalid_webhook_url: ${err}`);
+      const signing_secret = await setWebhook(db, user_id, a.webhook_url, webhook_kek, new Date().toISOString());
+      return { mode: "webhook", webhook_url: a.webhook_url, signing_secret, note: "Store this secret now; it cannot be shown again." };
+    },
+  },
+  {
+    name: "delete_my_data", scope: "write",
+    description: "Permanently delete all your data: interests, matches, events, webhook, API tokens and OAuth tokens/codes (including the one used for this call).",
+    input: z.object({ confirm: z.literal(true) }),
+    async run({ db, user_id }) {
+      await deleteUserData(db, user_id);
       return { deleted: true };
     },
   },

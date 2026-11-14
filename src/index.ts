@@ -22,6 +22,8 @@ export interface Env {
   /** GitHub OAuth app credentials; hosted OAuth login is enabled only when both are set. */
   GITHUB_CLIENT_ID?: string;
   GITHUB_CLIENT_SECRET?: string;
+  /** Key-encryption secret for webhook signing secrets (AES-GCM). Webhook delivery is unavailable when unset. */
+  WEBHOOK_KEK?: string;
 }
 
 export interface FetchMessage {
