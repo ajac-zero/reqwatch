@@ -18,7 +18,13 @@ The `/mcp` endpoint accepts either an `rw_` API token or an OAuth access token.
    wrangler secret put GITHUB_CLIENT_SECRET
    ```
    `GITHUB_CLIENT_SECRET` also signs the login state and CSRF tokens; rotating it invalidates in-flight logins.
-4. Deploy. OAuth is enabled when both secrets are set.
+4. Set the required `WEBHOOK_KEK` secret (encrypts webhook signing secrets). Generate it and store it:
+   ```
+   openssl rand -hex 32
+   wrangler secret put WEBHOOK_KEK
+   ```
+   `GET /health` returns `{ok, db, last_cron_at, webhook_kek}` and HTTP 503 (`webhook_kek: "missing"`) while it is unset, so point smoke checks and uptime monitors at it.
+5. Deploy. OAuth is enabled when both secrets are set.
 
 Endpoints: `/.well-known/oauth-authorization-server`, `/.well-known/oauth-protected-resource` (advertises the request
 origin as authorization server unless `AUTH_ISSUER` is set), `/register`, `/authorize`, `/token`, `/revoke`, `/oauth/callback`.

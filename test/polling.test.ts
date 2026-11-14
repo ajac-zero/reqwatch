@@ -199,17 +199,24 @@ describe("worker", () => {
     expect(acked).toBe(1);
   });
 
-  it("/health reports db, last cron; 503 when db is down", async () => {
+  it("/health reports db, last cron, kek; 503 when kek missing or db is down", async () => {
     const { db, raw } = makeDb();
-    const env = makeEnv(db);
+    const env = { ...makeEnv(db), WEBHOOK_KEK: "k".repeat(64) };
     const worker = (await import("../src/index")).default;
     let res = await worker.fetch(new Request("https://x/health"), env);
-    expect(await res.json()).toEqual({ ok: true, db: "ok", last_cron_at: null });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true, db: "ok", last_cron_at: null, webhook_kek: "ok" });
     await scheduled(env, NOW);
     res = await worker.fetch(new Request("https://x/health"), env);
-    expect(await res.json()).toEqual({ ok: true, db: "ok", last_cron_at: NOW });
+    expect(await res.json()).toEqual({ ok: true, db: "ok", last_cron_at: NOW, webhook_kek: "ok" });
+    for (const missing of [undefined, ""]) {
+      res = await worker.fetch(new Request("https://x/health"), { ...env, WEBHOOK_KEK: missing });
+      expect(res.status).toBe(503);
+      expect(await res.json()).toEqual({ ok: false, db: "ok", last_cron_at: NOW, webhook_kek: "missing" });
+    }
     raw.exec("DROP TABLE meta");
     res = await worker.fetch(new Request("https://x/health"), env);
     expect(res.status).toBe(503);
+    expect((await res.json() as { db: string }).db).toBe("error");
   });
 });

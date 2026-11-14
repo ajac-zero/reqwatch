@@ -46,13 +46,15 @@ export async function handleQueue(
 }
 
 export async function health(env: Env): Promise<Response> {
+  const webhook_kek = env.WEBHOOK_KEK ? "ok" : "missing";
   try {
     await env.DB.prepare("SELECT 1").bind().all();
     const last = (
       await env.DB.prepare("SELECT value FROM meta WHERE key = 'last_cron_at'").bind().all<{ value: string }>()
     ).results[0];
-    return Response.json({ ok: true, db: "ok", last_cron_at: last?.value ?? null });
+    const ok = webhook_kek === "ok";
+    return Response.json({ ok, db: "ok", last_cron_at: last?.value ?? null, webhook_kek }, { status: ok ? 200 : 503 });
   } catch {
-    return Response.json({ ok: false, db: "error", last_cron_at: null }, { status: 503 });
+    return Response.json({ ok: false, db: "error", last_cron_at: null, webhook_kek }, { status: 503 });
   }
 }

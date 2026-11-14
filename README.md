@@ -24,7 +24,7 @@ periodically with the last `next_cursor`), `get_job`, `search_jobs` (open jobs),
 ## Delivery: honest status
 - **Primary: cursor tool.** `list_matches(since_cursor)` is idempotent and works with every MCP client today.
 - **Fallback: signed webhook (implemented).** `set_delivery{mode:"webhook", webhook_url}` registers one HTTPS endpoint; `mode:"poll"` removes it.
-  The signing secret is returned once (calling again rotates it) and stored AES-GCM encrypted with the `WEBHOOK_KEK` secret; without it webhook mode is refused.
+  The signing secret is returned once (calling again rotates it) and stored AES-GCM encrypted with the `WEBHOOK_KEK` secret; without it webhook mode is refused. `WEBHOOK_KEK` is **required** for self-hosting: generate it with `openssl rand -hex 32` and set it with `wrangler secret put WEBHOOK_KEK`. `/health` returns 503 with `webhook_kek: "missing"` until it is set.
   URLs must be https on port 443 with a public domain name (no IP literals, credentials, `localhost`/`.internal`/`.local`); redirects are never followed.
   Workers cannot check DNS resolution, so that is the extent of SSRF protection.
   The existing cron (every 5 min) POSTs `{event_id, cursor, matches}` with `X-Reqwatch-Signature: sha256=HMAC_SHA256(secret, timestamp + "." + body)`,
