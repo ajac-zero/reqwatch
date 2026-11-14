@@ -220,3 +220,57 @@ describe("worker", () => {
     expect((await res.json() as { db: string }).db).toBe("error");
   });
 });
+
+/** Emulates Workers' fetch: throws unless called with `this` undefined or globalThis. */
+const strictFetch = (body: string, status = 200) =>
+  function (this: unknown, _url: string, _init?: RequestInit) {
+    if (this !== undefined && this !== globalThis) throw new TypeError("Illegal invocation");
+    return Promise.resolve(new Response(body, { status }));
+  } as unknown as typeof fetch;
+
+describe("fetch binding (Workers 'Illegal invocation')", () => {
+  const env = (db: Db): Env => ({ DB: db, FETCH_QUEUE: { send: async () => {} } });
+
+  it("pollCompany never calls fetchImpl as a method of deps", async () => {
+    const { db, raw } = makeDb();
+    const co = addCompany(raw, "greenhouse", "Acme", "acme");
+    const out = await pollCompany({ db, now: () => NOW, fetchImpl: strictFetch(fixture("greenhouse")) }, co);
+    expect(out.board.complete).toBe(true);
+    expect(out.board.error).toBeUndefined();
+  });
+
+  it("handleQueue -> real greenhouse adapter ingests the recorded fixture and sets last_ok_at", async () => {
+    const { db, raw } = makeDb();
+    const co = addCompany(raw, "greenhouse", "Acme", "acme");
+    const calls: string[] = [];
+    const msg: MessageLike<FetchMessage> = { body: { companyId: co.id }, ack: () => void calls.push("ack"), retry: () => void calls.push("retry") };
+    await handleQueue([msg], env(db), strictFetch(fixture("greenhouse")));
+    expect(calls).toEqual(["ack"]);
+    const row = raw.prepare("SELECT last_ok_at, fail_count, last_error FROM companies").get() as any;
+    expect(row.last_ok_at).toBeTruthy();
+    expect([row.fail_count, row.last_error]).toEqual([0, null]);
+    expect((raw.prepare("SELECT COUNT(*) n FROM jobs").get() as any).n).toBeGreaterThan(0);
+  });
+});
+
+describe("last_error", () => {
+  const poll = (db: Db, co: any, f: typeof fetch, now = NOW) => pollCompany({ db, now: () => now, fetchImpl: f }, co);
+  const state = (raw: any) => raw.prepare("SELECT last_error, last_error_at, fail_count FROM companies").get();
+
+  it("records a short reason per failure kind and clears it on success", async () => {
+    const { db, raw } = makeDb();
+    const co = addCompany(raw, "greenhouse", "Acme", "acme");
+    await poll(db, co, jsonFetch("", 404) as any);
+    expect(state(raw)).toEqual({ last_error: "http 404", last_error_at: NOW, fail_count: 1 });
+    await poll(db, co, jsonFetch("{}") as any, at(1));
+    expect(state(raw).last_error).toBe("invalid payload");
+    await poll(db, co, (async () => { throw new TypeError("x".repeat(500)); }) as any, at(2));
+    const e = state(raw).last_error as string;
+    expect(e.startsWith("fetch failed: xxx")).toBe(true);
+    expect(e.length).toBe(200);
+    await poll(db, co, (async () => { throw new DOMException("t", "TimeoutError"); }) as any, at(3));
+    expect(state(raw).last_error).toBe("timeout");
+    await poll(db, co, jsonFetch(fixture("greenhouse")) as any, at(4));
+    expect(state(raw)).toEqual({ last_error: null, last_error_at: null, fail_count: 0 });
+  });
+});

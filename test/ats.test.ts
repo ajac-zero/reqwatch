@@ -23,7 +23,7 @@ describe.each(cases)("adapter contract: $ats", ({ ats, file, ids, urlPart, first
   });
 
   it("is incomplete on HTTP error", async () => {
-    expect(await fetchBoard(company, jsonFetch("{}", 503))).toEqual({ jobs: [], complete: false });
+    expect(await fetchBoard(company, jsonFetch("{}", 503))).toEqual({ jobs: [], complete: false, error: "http 503" });
   });
 
   it("is incomplete on network failure", async () => {

@@ -1,5 +1,6 @@
 import { bearerToken, sha256Hex, safeEqual, type AuthResult, type Authenticator, authenticateApiToken } from "../auth";
 import type { Env } from "../index";
+import { globalFetch } from "../types";
 
 export const ACCESS_PREFIX = "rwo_";
 export const REFRESH_PREFIX = "rwr_";
@@ -319,7 +320,7 @@ async function revoke(req: Request, env: Env): Promise<Response> {
 
 export const OAUTH_PATHS = ["/.well-known/oauth-authorization-server", "/register", "/authorize", "/token", "/revoke", "/oauth/callback"];
 
-export async function handleOAuthRoute(req: Request, env: Env, fetchImpl: typeof fetch = fetch): Promise<Response> {
+export async function handleOAuthRoute(req: Request, env: Env, fetchImpl: typeof fetch = globalFetch): Promise<Response> {
   const path = new URL(req.url).pathname;
   if (path === "/authorize") return authorize(req, env);
   if (!oauthConfigured(env)) return new Response("Not found", { status: 404 });

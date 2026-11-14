@@ -109,9 +109,12 @@ export async function ingestBoard(
         await run("UPDATE jobs SET missed_polls = ? WHERE id = ?", missed, prev.id);
       }
     }
-    await run("UPDATE companies SET last_ok_at = ?, fail_count = 0 WHERE id = ?", now, company.id);
+    await run("UPDATE companies SET last_ok_at = ?, fail_count = 0, last_error = NULL, last_error_at = NULL WHERE id = ?", now, company.id);
   } else {
-    await run("UPDATE companies SET fail_count = fail_count + 1 WHERE id = ?", company.id);
+    await run(
+      "UPDATE companies SET fail_count = fail_count + 1, last_error = ?, last_error_at = ? WHERE id = ?",
+      result.error ?? "unknown", now, company.id,
+    );
   }
 
   // Persist the flag for every job of this company: open jobs sharing a dedup_key with another open job.

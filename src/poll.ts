@@ -66,7 +66,9 @@ export interface PollOutcome {
 export async function pollCompany(deps: PollDeps, company: Company): Promise<PollOutcome> {
   const now = (deps.now ?? (() => new Date().toISOString()))();
   const limiter = deps.limiter ?? defaultLimiter;
-  const limited: FetchImpl = (url, init) => limiter.run(new URL(url).host, () => deps.fetchImpl(url, init));
+  // Call via a local so fetch never receives `deps` as `this` (Workers: "Illegal invocation").
+  const fetchImpl = deps.fetchImpl;
+  const limited: FetchImpl = (url, init) => limiter.run(new URL(url).host, () => fetchImpl(url, init));
 
   const board = await fetchBoard(company, limited);
 

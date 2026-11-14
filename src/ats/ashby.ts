@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { BoardResult, Company, FetchImpl, RawJob } from "../types";
-import { getJson, INCOMPLETE } from "./index";
+import { getJson, incomplete } from "./index";
 
 const Payload = z.object({
   jobs: z.array(
@@ -19,8 +19,10 @@ const Payload = z.object({
 
 export async function fetchAshby(company: Company, fetchImpl: FetchImpl): Promise<BoardResult> {
   const url = `https://api.ashbyhq.com/posting-api/job-board/${encodeURIComponent(company.board_token)}`;
-  const parsed = Payload.safeParse(await getJson(url, fetchImpl));
-  if (!parsed.success) return INCOMPLETE;
+  const res = await getJson(url, fetchImpl);
+  if (res.error !== undefined) return incomplete(res.error);
+  const parsed = Payload.safeParse(res.json);
+  if (!parsed.success) return incomplete("invalid payload");
   const jobs: RawJob[] = parsed.data.jobs
     .filter((j) => j.isListed !== false)
     .map((j) => ({

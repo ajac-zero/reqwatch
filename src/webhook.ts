@@ -1,6 +1,7 @@
 import type { Db } from "./db";
 import type { Env } from "./index";
 import { listMatches } from "./matches";
+import { globalFetch } from "./types";
 
 export const BACKOFF_MS = [60_000, 5 * 60_000, 30 * 60_000, 2 * 3600_000, 6 * 3600_000, 24 * 3600_000];
 export const DISABLE_AFTER_MS = 7 * 24 * 3600_000;
@@ -76,7 +77,7 @@ export async function deliverWebhooks(
   const out = { delivered: 0, failed: 0 };
   if (!env.WEBHOOK_KEK) return out;
   const db = env.DB;
-  const fetchImpl = opts.fetchImpl ?? fetch;
+  const fetchImpl = opts.fetchImpl ?? globalFetch;
   const rows = (
     await db
       .prepare(

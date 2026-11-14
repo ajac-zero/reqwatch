@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { BoardResult, Company, FetchImpl, RawJob } from "../types";
-import { getJson, INCOMPLETE, isoFromMs } from "./index";
+import { getJson, incomplete, isoFromMs } from "./index";
 
 const Payload = z.array(
   z.object({
@@ -17,8 +17,10 @@ const Payload = z.array(
 
 export async function fetchLever(company: Company, fetchImpl: FetchImpl): Promise<BoardResult> {
   const url = `https://api.lever.co/v0/postings/${encodeURIComponent(company.board_token)}?mode=json`;
-  const parsed = Payload.safeParse(await getJson(url, fetchImpl));
-  if (!parsed.success) return INCOMPLETE;
+  const res = await getJson(url, fetchImpl);
+  if (res.error !== undefined) return incomplete(res.error);
+  const parsed = Payload.safeParse(res.json);
+  if (!parsed.success) return incomplete("invalid payload");
   const jobs: RawJob[] = parsed.data.map((j) => {
     const locs = j.categories?.allLocations?.length
       ? j.categories.allLocations

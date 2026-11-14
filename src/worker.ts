@@ -1,4 +1,5 @@
 import type { Env, FetchMessage, MessageLike } from "./index";
+import { globalFetch } from "./types";
 import { pollCompany } from "./poll";
 import { deliverWebhooks } from "./webhook";
 import { leaseCompany, selectDueCompanies } from "./scheduler";
@@ -26,7 +27,7 @@ export async function scheduled(env: Env, now = new Date().toISOString()): Promi
 export async function handleQueue(
   messages: MessageLike<FetchMessage>[],
   env: Env,
-  fetchImpl: typeof fetch = fetch,
+  fetchImpl: typeof fetch = globalFetch,
 ): Promise<void> {
   for (const msg of messages) {
     try {

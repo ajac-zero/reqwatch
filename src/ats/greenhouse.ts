@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { BoardResult, Company, FetchImpl, RawJob } from "../types";
-import { getJson, INCOMPLETE } from "./index";
+import { getJson, incomplete } from "./index";
 
 const Payload = z.object({
   jobs: z.array(
@@ -19,12 +19,13 @@ const Payload = z.object({
 
 export async function fetchGreenhouse(company: Company, fetchImpl: FetchImpl): Promise<BoardResult> {
   const url = `https://boards-api.greenhouse.io/v1/boards/${encodeURIComponent(company.board_token)}/jobs?content=true`;
-  const json = await getJson(url, fetchImpl);
-  const parsed = Payload.safeParse(json);
-  if (!parsed.success) return INCOMPLETE;
+  const res = await getJson(url, fetchImpl);
+  if (res.error !== undefined) return incomplete(res.error);
+  const parsed = Payload.safeParse(res.json);
+  if (!parsed.success) return incomplete("invalid payload");
   const { jobs, meta } = parsed.data;
   // Truncation check: the feed reports its own total.
-  if (meta && meta.total !== jobs.length) return INCOMPLETE;
+  if (meta && meta.total !== jobs.length) return incomplete("invalid payload");
   const out: RawJob[] = jobs.map((j) => ({
     extId: String(j.id),
     title: j.title,
