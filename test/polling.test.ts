@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { handleQueue, health, scheduled, type Env, type FetchMessage, type MessageLike } from "../src/index";
+import type { Env, FetchMessage, MessageLike } from "../src/index";
+import { handleQueue, health, scheduled } from "../src/worker";
 import { createHostLimiter, pollCompany } from "../src/poll";
 import { intervalMs, selectDueCompanies, updateAfterPoll } from "../src/scheduler";
 import { USER_AGENT } from "../src/ats";

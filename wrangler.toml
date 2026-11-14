@@ -33,4 +33,4 @@ dead_letter_queue = "reqwatch-fetch-dlq"
 # listed paths always run the Worker. Add new Worker routes here.
 [assets]
 directory = "./public"
-run_worker_first = ["/api/*", "/mcp", "/health", "/admin/*", "/.well-known/*"]
+run_worker_first = ["/api/*", "/mcp", "/health", "/admin/*", "/.well-known/*", "/register", "/authorize", "/token", "/revoke", "/oauth/*"]
